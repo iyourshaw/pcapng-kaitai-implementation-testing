@@ -1,1 +1,16 @@
 .idea/
+
+# build outputs
+build/
+__pycache__/
+.pytest_cache/
+
+# generated decoders (rebuilt by scripts/compile.py)
+tests/*/generated/
+
+# per-language tooling
+tests/python/.venv/
+tests/javascript/node_modules/
+tests/java/build/
+tests/java/.gradle/
+tests/java/.kotlin/
