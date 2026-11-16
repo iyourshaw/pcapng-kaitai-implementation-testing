@@ -1,0 +1,112 @@
+#!/usr/bin/env python3
+"""Layer 1: compile the pcapng specs with ksc.
+
+    python scripts/compile.py                       # java, python, javascript -> tests/<lang>/generated
+    python scripts/compile.py --target python       # just one target
+    python scripts/compile.py --all                 # every ksc target -> build/ksc-all (compile check only)
+
+Exits non-zero if ksc fails or reports any error.
+"""
+
+from __future__ import annotations
+
+import argparse
+import shutil
+import sys
+
+from _common import BUILD, TARGETS, collect_errors, parse_targets, run_ksc
+
+# The output languages `ksc -t all` produces with ksc 0.11 (`cpp_stl` comes
+# out as both C++98 and C++11).
+ALL_KSC_TARGETS = [
+    "construct", "cpp_stl_11", "cpp_stl_98", "csharp", "go", "graphviz", "html", "java",
+    "javascript", "lua", "nim", "perl", "php", "python", "ruby", "rust",
+]
+
+# Known ksc limitations: errors that are expected and don't fail the --all
+# check. Each key is (language, spec name). Keep the reason specific, so it's
+# clear when an entry can be removed.
+KNOWN_FAILURES = {
+    # Upstream pcap.ksy (5f37c81) fails the same way. The patched local pcap.ksy
+    # is little-endian only, so it compiles; restore an entry for it when pcap
+    # is reconciled with upstream.
+    ("construct", "pcapng"): "ksc 0.11 construct backend can't do calculated endianness "
+                             "(meta/endian switch-on), which section uses",
+}
+
+
+def compile_one(target: str, outdir, extra_args) -> bool:
+    if outdir.exists():
+        shutil.rmtree(outdir)
+    code, log, stderr = run_ksc([target], outdir, extra_args)
+    return report(target, code, log, stderr)
+
+
+def report(label: str, code: int, log: dict | None, stderr: str,
+           known: dict | None = None) -> bool:
+    """Print ksc's errors; True if there were none apart from known failures."""
+    if log is None:
+        print(f"[{label}] ksc did not produce a JSON log (exit {code}):\n{stderr}", file=sys.stderr)
+        return False
+    known = known or {}
+    errors = list(dict.fromkeys(collect_errors(log)))  # dedupe; specs share imports
+    unexpected = 0
+    for lang, spec, msg in errors:
+        reason = known.get((lang, spec))
+        if reason:
+            print(f"[{label}] XFAIL {msg}  ({reason})")
+        else:
+            print(f"[{label}] ERROR {msg}", file=sys.stderr)
+            unexpected += 1
+    for key in known:
+        if not any((lang, spec) == key for lang, spec, _ in errors):
+            print(f"[{label}] XPASS {key[0]}/{key[1]} now compiles; remove it from KNOWN_FAILURES")
+    if code != 0 and not errors:
+        print(f"[{label}] ksc exited with {code}:\n{stderr}", file=sys.stderr)
+    return code == 0 and unexpected == 0
+
+
+def compile_targets(targets: list[str]) -> bool:
+    ok = True
+    for t in targets:
+        cfg = TARGETS[t]
+        good = compile_one(t, cfg["outdir"], cfg["ksc_args"])
+        print(f"[{t}] {'OK' if good else 'FAILED'} -> {cfg['outdir']}")
+        ok &= good
+    return ok
+
+
+def compile_all() -> bool:
+    outdir = BUILD / "ksc-all"
+    if outdir.exists():
+        shutil.rmtree(outdir)
+    code, log, stderr = run_ksc(["all"], outdir, ["--java-package", "pcapng.formats"])
+    ok = report("all", code, log, stderr, KNOWN_FAILURES)
+    if log is not None:
+        produced = sorted({lang for spec in log.values() for lang in spec.get("output", {})})
+        missing = [t for t in ALL_KSC_TARGETS if t not in produced]
+        print(f"[all] targets with output: {', '.join(produced)}")
+        if missing:
+            print(f"[all] no output for: {', '.join(missing)}", file=sys.stderr)
+            ok = False
+    print(f"[all] {'OK' if ok else 'FAILED'} -> {outdir}")
+    return ok
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--target", help="comma-separated targets (default: java,python,javascript)")
+    ap.add_argument("--all", action="store_true", help="compile for every ksc target into build/ksc-all")
+    args = ap.parse_args()
+
+    if args.all:
+        ok = compile_all()
+        if args.target:
+            ok &= compile_targets(parse_targets(args.target))
+    else:
+        ok = compile_targets(parse_targets(args.target))
+    return 0 if ok else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

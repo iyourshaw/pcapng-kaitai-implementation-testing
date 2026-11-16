@@ -39,7 +39,17 @@ Each script takes `--target java,python,javascript` (the default) to pick langua
 `ksc` exits with 0 even when it reports errors, so `compile.py` reads its `--ksc-json-output`
 log. Known `ksc` limitations are listed in `KNOWN_FAILURES` in `scripts/compile.py`. At the
 moment that's just the construct backend, which can't handle the switched endianness that
-`pcap` and `pcapng` use.
+`pcapng` uses.
+
+The submodule carries **patched local copies** of `network/pcap.ksy` and
+`network/ethernet_frame.ksy` (fork commit bff8c65). They're the versions originally used with
+the samples, and the tests run against them as they are:
+- `ethernet_frame` names ether type 0x88dc (`wsmp`). The decode tests check that every Ethernet
+  packet's ether type is named in `ether_type_enum`.
+- `pcap` is little-endian only, adds the 802.11, radiotap and Linux SLL link types, and doesn't
+  clamp the packet body to snaplen.
+
+`pcap.ksy` still has to be reconciled with upstream `master` (5f37c81 and later).
 
 ## Samples and golden files
 
