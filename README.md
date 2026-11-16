@@ -1,5 +1,7 @@
 # pcapng Kaitai Struct tests
 
+[![tests](https://github.com/iyourshaw/pcapng-kaitai-implementation-testing/actions/workflows/tests.yml/badge.svg)](https://github.com/iyourshaw/pcapng-kaitai-implementation-testing/actions/workflows/tests.yml)
+
 Tests for an implementation of a cross-platform pcapng decoder using Kaitai Struct.
 
 Includes scripts to compile the pcapng implementation to every language supported by Kaitai Struct
@@ -12,7 +14,9 @@ are in the `kaitai_struct_formats` submodule, which tracks the `pcapng` branch o
 
 ## Prerequisites
 
-- **ksc 0.11** on `PATH`, or set `KSC`.
+- **ksc 0.11** on `PATH`, or set `KSC`. On Linux/macOS, unzip `kaitai-struct-compiler-0.11.zip` from the
+  [ksc releases](https://github.com/kaitai-io/kaitai_struct_compiler/releases/tag/0.11) and point `KSC`
+  at its `bin/kaitai-struct-compiler`. It runs on the `java` on `PATH`.
 - **Python 3.10+**:
   ```sh
   python -m venv tests/python/.venv
@@ -51,6 +55,17 @@ the samples, and the tests run against them as they are:
 
 `pcap.ksy` still has to be reconciled with upstream `master` (5f37c81 and later).
 
+## CI
+
+`.github/workflows/tests.yml` runs on every push and pull request, and can be started by hand from
+the Actions tab:
+- `compile`: layer 1 for every ksc target, on Ubuntu.
+- `test`: layers 2 and 3 for each of Java, Python and JavaScript, on Ubuntu and on Windows (6 jobs).
+
+The jobs install ksc from the 0.11 release zip, with a pinned sha256, and use Temurin 25, Python 3.13
+and Node 24. A failing Java job uploads its test reports as an artifact. `gen_expected.py --check`
+isn't run in CI: it needs tshark 4.6.9, and the golden files it checks are committed.
+
 ## Samples and golden files
 
 `samples/` holds synthetic captures, described in `samples/README.md`. Each sample has a 'golden
@@ -73,3 +88,15 @@ Each language compares, per sample:
 - packets: interface, lengths, nanosecond timestamps (from `if_tsresol` and `if_tsoffset`) and comments
 - name records and interface statistics
 - each packet parsed with `link_frame`: Ethernet or SLL protocol, 802.11 type and subtype, radiotap length
+
+## License
+
+Copyright 2026 Neaera Consulting LLC. Licensed under the [Apache License, Version 2.0](LICENSE).
+See [NOTICE](NOTICE) for attributions.
+
+The `kaitai_struct_formats` submodule isn't covered by this license. As in upstream, each `.ksy` there
+is licensed on its own (`meta/license`). The specs these tests use are either Apache-2.0 (`pcapng`,
+`link_frame`, `linux_sll`, `ieee802_11`, `radiotap`) or CC0-1.0 (`pcap`, `ethernet_frame` and the
+other imported network specs), and both work with Apache-2.0. The generated decoders keep the
+license of the spec they come from, and aren't committed. The Kaitai Struct compiler (GPL-3.0) is
+only used as a build tool; it isn't included here.

@@ -1,0 +1,43 @@
+pcapng Kaitai Struct tests
+Copyright 2026 Neaera Consulting LLC
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+That covers the scripts, the test projects, the golden files in tests/expected/
+and the synthetic captures in samples/.
+
+-------------------------------------------------------------------------------
+Third-party material
+-------------------------------------------------------------------------------
+
+kaitai_struct_formats (git submodule)
+  The kaitai_struct_formats/ directory is a git submodule that points at
+  https://github.com/iyourshaw/kaitai_struct_formats, a fork of
+  https://github.com/kaitai-io/kaitai_struct_formats. It isn't part of this
+  product, and the Apache License above doesn't apply to it. Each .ksy file in
+  it is licensed separately, as given by its meta/license tag and comments.
+
+  The specs these tests compile, and their licenses:
+    network/pcapng.ksy, network/link_frame.ksy, network/linux_sll.ksy,
+    network/ieee802_11.ksy, network/radiotap.ksy
+        Apache-2.0, Copyright 2026 Neaera Consulting LLC
+    network/pcap.ksy, network/ethernet_frame.ksy, network/packet_ppi.ksy,
+    network/ipv4_packet.ksy, network/ipv6_packet.ksy, network/tcp_segment.ksy,
+    network/udp_datagram.ksy, network/icmp_packet.ksy, network/protocol_body.ksy
+        CC0-1.0
+
+  The decoders generated from these specs (tests/*/generated/, build/) are
+  derived from them and keep each spec's license. They aren't committed.
+
+Gradle Wrapper
+  tests/java/gradlew, tests/java/gradlew.bat and
+  tests/java/gradle/wrapper/gradle-wrapper.jar
+  Copyright 2015 the original authors. Licensed under the Apache License,
+  Version 2.0.
+
+Tools and libraries that are used but not included
+  The following are downloaded by the scripts, the package managers or CI, and
+  aren't redistributed here. Each has its own license:
+    Kaitai Struct compiler 0.11 (GPL-3.0-or-later), used as a build tool
+    Kaitai Struct runtimes: kaitaistruct for Python (MIT), kaitai-struct for
+      JavaScript (Apache-2.0), io.kaitai:kaitai-struct-runtime for Java (MIT)
+    Test dependencies: pytest, JUnit, Jackson, JsonUnit, Hamcrest and Gradle
