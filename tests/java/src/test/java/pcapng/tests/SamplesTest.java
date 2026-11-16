@@ -134,7 +134,7 @@ class SamplesTest {
                     try {
                         fields = PcapngSummary.linkFields(pd.linkType(), pd.data());
                     } catch (RuntimeException e) {
-                        throw new AssertionError(where + ": link_frame failed to parse", e);
+                        throw new AssertionError(where + ": pcapng_link_frame failed to parse", e);
                     }
                     if (pd.linkType() == 1) {
                         // Every ether type in the samples should be named in ethernet_frame's

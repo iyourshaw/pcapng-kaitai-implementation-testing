@@ -1,0 +1,14 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__pcapng_custom_block {
+		label="PcapngCustomBlock";
+		graph[style=dotted];
+
+		pcapng_custom_block__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="pen_pos">0</TD><TD PORT="pen_size">4</TD><TD>u4</TD><TD PORT="pen_type">pen</TD></TR>
+			<TR><TD PORT="custom_data_pos">4</TD><TD PORT="custom_data_size">⇲</TD><TD></TD><TD PORT="custom_data_type">custom_data</TD></TR>
+		</TABLE>>];
+	}
+}

@@ -128,7 +128,7 @@ namespace PcapngTests
                 }
                 catch (Exception e)
                 {
-                    throw new AssertionException($"{where}: link_frame failed to parse: {e.Message}", e);
+                    throw new AssertionException($"{where}: pcapng_link_frame failed to parse: {e.Message}", e);
                 }
                 if (pd.LinkType == 1)
                 {

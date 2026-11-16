@@ -151,7 +151,7 @@ for _, name in ipairs(names) do
         if v ~= json.null then golden[k] = v end
       end
       local ok, fields = pcall(summary.link_fields, pd.link_type, pd.data)
-      if not ok then lu.fail(where .. ": link_frame failed to parse: " .. tostring(fields)) end
+      if not ok then lu.fail(where .. ": pcapng_link_frame failed to parse: " .. tostring(fields)) end
       if pd.link_type == 1 then
         -- Every ether type in the samples should be named in ethernet_frame's
         -- ether_type_enum (the fork adds 0x88dc, wsmp).

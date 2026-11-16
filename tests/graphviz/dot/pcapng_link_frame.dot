@@ -1,0 +1,28 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__pcapng_link_frame {
+		label="PcapngLinkFrame";
+		graph[style=dotted];
+
+		pcapng_link_frame__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="body_pos">0</TD><TD PORT="body_size">...</TD><TD>switch (link_type)</TD><TD PORT="body_type">body</TD></TR>
+		</TABLE>>];
+pcapng_link_frame__seq_body_switch [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<TR><TD BGCOLOR="#F0F2E4">case</TD><TD BGCOLOR="#F0F2E4">type</TD></TR>
+	<TR><TD>1</TD><TD PORT="case0">EthernetFrame</TD></TR>
+	<TR><TD>105</TD><TD PORT="case1">Ieee80211</TD></TR>
+	<TR><TD>113</TD><TD PORT="case2">LinuxSll</TD></TR>
+	<TR><TD>127</TD><TD PORT="case3">Radiotap</TD></TR>
+	<TR><TD>192</TD><TD PORT="case4">PacketPpi</TD></TR>
+</TABLE>>];
+	}
+	pcapng_link_frame__seq:body_type -> pcapng_link_frame__seq_body_switch [style=bold];
+	pcapng_link_frame__seq_body_switch:case0 -> ethernet_frame__seq [style=bold];
+	pcapng_link_frame__seq_body_switch:case1 -> ieee802_11__seq [style=bold];
+	pcapng_link_frame__seq_body_switch:case2 -> linux_sll__seq [style=bold];
+	pcapng_link_frame__seq_body_switch:case3 -> radiotap__seq [style=bold];
+	pcapng_link_frame__seq_body_switch:case4 -> packet_ppi__seq [style=bold];
+	pcapng_link_frame__params:link_type_type -> pcapng_link_frame__seq:body_type [color="#404040"];
+}

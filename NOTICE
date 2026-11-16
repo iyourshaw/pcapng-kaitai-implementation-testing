@@ -17,8 +17,9 @@ kaitai_struct_formats (git submodule)
   it is licensed separately, as given by its meta/license tag and comments.
 
   The specs these tests compile, and their licenses:
-    network/pcapng.ksy, network/link_frame.ksy, network/linux_sll.ksy,
-    network/ieee802_11.ksy, network/radiotap.ksy
+    network/pcapng/*.ksy (pcapng, its 9 block files, pcapng_options and
+    pcapng_link_frame), network/linux_sll.ksy, network/ieee802_11.ksy,
+    network/radiotap.ksy
         Apache-2.0, Copyright 2026 Neaera Consulting LLC
     network/pcap.ksy, network/ethernet_frame.ksy, network/packet_ppi.ksy,
     network/ipv4_packet.ksy, network/ipv6_packet.ksy, network/tcp_segment.ksy,
@@ -31,8 +32,8 @@ kaitai_struct_formats (git submodule)
   The Graphviz diagrams in tests/graphviz/dot/ and tests/graphviz/svg/ are
   generated from the same specs (ksc -t graphviz, then Graphviz's dot) and are
   committed. Each keeps the license of the spec it is drawn from: Apache-2.0
-  for pcapng, link_frame, linux_sll, ieee802_11 and radiotap, and CC0-1.0 for
-  the others.
+  for the pcapng* files, linux_sll, ieee802_11 and radiotap, and
+  CC0-1.0 for the others.
 
 Gradle Wrapper
   tests/java/gradlew, tests/java/gradlew.bat and

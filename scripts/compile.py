@@ -29,10 +29,20 @@ ALL_KSC_TARGETS = [
 KNOWN_FAILURES = {
     # Upstream pcap.ksy (5f37c81) fails the same way. The patched local pcap.ksy
     # is little-endian only, so it compiles; restore an entry for it when pcap
-    # is reconciled with upstream.
-    ("construct", "pcapng"): "ksc 0.11 construct backend can't do calculated endianness "
-                             "(meta/endian switch-on), which section uses",
+    # is reconciled with upstream. The spec name is a glob: every file of the
+    # split pcapng spec has calculated endianness (switch-on the section's magic,
+    # or on the is_le param the block files take).
+    ("construct", "pcapng*"): "ksc 0.11 construct backend can't do calculated endianness "
+                              "(meta/endian switch-on), which every pcapng file uses",
 }
+
+
+def _known_reason(known: dict, lang: str | None, spec: str | None) -> str | None:
+    import fnmatch
+    for (k_lang, k_spec), reason in known.items():
+        if lang == k_lang and spec is not None and fnmatch.fnmatchcase(spec, k_spec):
+            return reason
+    return None
 
 
 def clear_dir(path) -> None:
@@ -63,14 +73,14 @@ def report(label: str, code: int, log: dict | None, stderr: str,
     errors = list(dict.fromkeys(collect_errors(log)))  # dedupe; specs share imports
     unexpected = 0
     for lang, spec, msg in errors:
-        reason = known.get((lang, spec))
+        reason = _known_reason(known, lang, spec)
         if reason:
             print(f"[{label}] XFAIL {msg}  ({reason})")
         else:
             print(f"[{label}] ERROR {msg}", file=sys.stderr)
             unexpected += 1
     for key in known:
-        if not any((lang, spec) == key for lang, spec, _ in errors):
+        if not any(_known_reason({key: ""}, lang, spec) is not None for lang, spec, _ in errors):
             print(f"[{label}] XPASS {key[0]}/{key[1]} now compiles; remove it from KNOWN_FAILURES")
     if code != 0 and not errors:
         print(f"[{label}] ksc exited with {code}:\n{stderr}", file=sys.stderr)

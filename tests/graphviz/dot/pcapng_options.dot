@@ -1,0 +1,446 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__pcapng_options {
+		label="PcapngOptions";
+		graph[style=dotted];
+
+		pcapng_options__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="entries_pos">0</TD><TD PORT="entries_size">...</TD><TD>Option</TD><TD PORT="entries_type">entries</TD></TR>
+			<TR><TD COLSPAN="4" PORT="entries__repeat">repeat until  ((_.code == 0) || (_io.eof?)) </TD></TR>
+			<TR><TD COLSPAN="4" PORT="entries__if">if !(_io.eof?)</TD></TR>
+		</TABLE>>];
+		subgraph cluster__common_option_value {
+			label="PcapngOptions::CommonOptionValue";
+			graph[style=dotted];
+
+			common_option_value__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="value_pos">0</TD><TD PORT="value_size">...</TD><TD>switch (code)</TD><TD PORT="value_type">value</TD></TR>
+			</TABLE>>];
+			common_option_value__inst__code [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>code</TD><TD>Kaitai::Struct::Stream::resolve_enum(PcapngOptions::COMMON_OPTION_CODE, _parent.code)</TD></TR>
+			</TABLE>>];
+common_option_value__seq_value_switch [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<TR><TD BGCOLOR="#F0F2E4">case</TD><TD BGCOLOR="#F0F2E4">type</TD></TR>
+	<TR><TD>:common_option_code_opt_comment</TD><TD PORT="case0">OptionText</TD></TR>
+	<TR><TD>:common_option_code_opt_custom_bytes</TD><TD PORT="case1">CustomOptionBytes</TD></TR>
+	<TR><TD>:common_option_code_opt_custom_bytes_no_copy</TD><TD PORT="case2">CustomOptionBytes</TD></TR>
+	<TR><TD>:common_option_code_opt_custom_text</TD><TD PORT="case3">CustomOptionText</TD></TR>
+	<TR><TD>:common_option_code_opt_custom_text_no_copy</TD><TD PORT="case4">CustomOptionText</TD></TR>
+</TABLE>>];
+		}
+		subgraph cluster__custom_option_bytes {
+			label="PcapngOptions::CustomOptionBytes";
+			graph[style=dotted];
+
+			custom_option_bytes__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="pen_pos">0</TD><TD PORT="pen_size">4</TD><TD>u4</TD><TD PORT="pen_type">pen</TD></TR>
+				<TR><TD COLSPAN="4" PORT="pen__if">if _io.size &gt;= 4</TD></TR>
+				<TR><TD PORT="data_pos">4</TD><TD PORT="data_size">⇲</TD><TD></TD><TD PORT="data_type">data</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__custom_option_text {
+			label="PcapngOptions::CustomOptionText";
+			graph[style=dotted];
+
+			custom_option_text__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="pen_pos">0</TD><TD PORT="pen_size">4</TD><TD>u4</TD><TD PORT="pen_type">pen</TD></TR>
+				<TR><TD COLSPAN="4" PORT="pen__if">if _io.size &gt;= 4</TD></TR>
+				<TR><TD PORT="value_pos">4</TD><TD PORT="value_size">⇲</TD><TD>str(UTF-8)</TD><TD PORT="value_type">value</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__enhanced_packet_option_value {
+			label="PcapngOptions::EnhancedPacketOptionValue";
+			graph[style=dotted];
+
+			enhanced_packet_option_value__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="value_pos">0</TD><TD PORT="value_size">...</TD><TD>switch (code)</TD><TD PORT="value_type">value</TD></TR>
+			</TABLE>>];
+			enhanced_packet_option_value__inst__code [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>code</TD><TD>Kaitai::Struct::Stream::resolve_enum(PcapngOptions::ENHANCED_PACKET_OPTION_CODE, _parent.code)</TD></TR>
+			</TABLE>>];
+enhanced_packet_option_value__seq_value_switch [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<TR><TD BGCOLOR="#F0F2E4">case</TD><TD BGCOLOR="#F0F2E4">type</TD></TR>
+	<TR><TD>:enhanced_packet_option_code_epb_dropcount</TD><TD PORT="case0">OptionU8</TD></TR>
+	<TR><TD>:enhanced_packet_option_code_epb_flags</TD><TD PORT="case1">OptionU4</TD></TR>
+	<TR><TD>:enhanced_packet_option_code_epb_hash</TD><TD PORT="case2">OptionWithKind</TD></TR>
+	<TR><TD>:enhanced_packet_option_code_epb_packetid</TD><TD PORT="case3">OptionU8</TD></TR>
+	<TR><TD>:enhanced_packet_option_code_epb_processid_threadid</TD><TD PORT="case4">OptionProcessThread</TD></TR>
+	<TR><TD>:enhanced_packet_option_code_epb_queue</TD><TD PORT="case5">OptionU4</TD></TR>
+	<TR><TD>:enhanced_packet_option_code_epb_verdict</TD><TD PORT="case6">OptionWithKind</TD></TR>
+</TABLE>>];
+		}
+		subgraph cluster__interface_description_option_value {
+			label="PcapngOptions::InterfaceDescriptionOptionValue";
+			graph[style=dotted];
+
+			interface_description_option_value__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="value_pos">0</TD><TD PORT="value_size">...</TD><TD>switch (code)</TD><TD PORT="value_type">value</TD></TR>
+			</TABLE>>];
+			interface_description_option_value__inst__code [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>code</TD><TD>Kaitai::Struct::Stream::resolve_enum(PcapngOptions::INTERFACE_DESCRIPTION_OPTION_CODE, _parent.code)</TD></TR>
+			</TABLE>>];
+interface_description_option_value__seq_value_switch [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<TR><TD BGCOLOR="#F0F2E4">case</TD><TD BGCOLOR="#F0F2E4">type</TD></TR>
+	<TR><TD>:interface_description_option_code_if_description</TD><TD PORT="case0">OptionText</TD></TR>
+	<TR><TD>:interface_description_option_code_if_euiaddr</TD><TD PORT="case1">OptionEui64</TD></TR>
+	<TR><TD>:interface_description_option_code_if_fcslen</TD><TD PORT="case2">OptionU1</TD></TR>
+	<TR><TD>:interface_description_option_code_if_filter</TD><TD PORT="case3">OptionWithKind</TD></TR>
+	<TR><TD>:interface_description_option_code_if_hardware</TD><TD PORT="case4">OptionText</TD></TR>
+	<TR><TD>:interface_description_option_code_if_iana_tzname</TD><TD PORT="case5">OptionText</TD></TR>
+	<TR><TD>:interface_description_option_code_if_ipv4addr</TD><TD PORT="case6">OptionIpv4WithNetmask</TD></TR>
+	<TR><TD>:interface_description_option_code_if_ipv6addr</TD><TD PORT="case7">OptionIpv6WithPrefix</TD></TR>
+	<TR><TD>:interface_description_option_code_if_macaddr</TD><TD PORT="case8">OptionEui48</TD></TR>
+	<TR><TD>:interface_description_option_code_if_name</TD><TD PORT="case9">OptionText</TD></TR>
+	<TR><TD>:interface_description_option_code_if_os</TD><TD PORT="case10">OptionText</TD></TR>
+	<TR><TD>:interface_description_option_code_if_rxspeed</TD><TD PORT="case11">OptionU8</TD></TR>
+	<TR><TD>:interface_description_option_code_if_speed</TD><TD PORT="case12">OptionU8</TD></TR>
+	<TR><TD>:interface_description_option_code_if_tsoffset</TD><TD PORT="case13">OptionS8</TD></TR>
+	<TR><TD>:interface_description_option_code_if_tsresol</TD><TD PORT="case14">OptionU1</TD></TR>
+	<TR><TD>:interface_description_option_code_if_txspeed</TD><TD PORT="case15">OptionU8</TD></TR>
+	<TR><TD>:interface_description_option_code_if_tzone</TD><TD PORT="case16">OptionU4</TD></TR>
+</TABLE>>];
+		}
+		subgraph cluster__interface_statistics_option_value {
+			label="PcapngOptions::InterfaceStatisticsOptionValue";
+			graph[style=dotted];
+
+			interface_statistics_option_value__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="value_pos">0</TD><TD PORT="value_size">...</TD><TD>switch (code)</TD><TD PORT="value_type">value</TD></TR>
+			</TABLE>>];
+			interface_statistics_option_value__inst__code [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>code</TD><TD>Kaitai::Struct::Stream::resolve_enum(PcapngOptions::INTERFACE_STATISTICS_OPTION_CODE, _parent.code)</TD></TR>
+			</TABLE>>];
+interface_statistics_option_value__seq_value_switch [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<TR><TD BGCOLOR="#F0F2E4">case</TD><TD BGCOLOR="#F0F2E4">type</TD></TR>
+	<TR><TD>:interface_statistics_option_code_isb_endtime</TD><TD PORT="case0">OptionTimestamp</TD></TR>
+	<TR><TD>:interface_statistics_option_code_isb_filteraccept</TD><TD PORT="case1">OptionU8</TD></TR>
+	<TR><TD>:interface_statistics_option_code_isb_ifdrop</TD><TD PORT="case2">OptionU8</TD></TR>
+	<TR><TD>:interface_statistics_option_code_isb_ifrecv</TD><TD PORT="case3">OptionU8</TD></TR>
+	<TR><TD>:interface_statistics_option_code_isb_osdrop</TD><TD PORT="case4">OptionU8</TD></TR>
+	<TR><TD>:interface_statistics_option_code_isb_starttime</TD><TD PORT="case5">OptionTimestamp</TD></TR>
+	<TR><TD>:interface_statistics_option_code_isb_usrdeliv</TD><TD PORT="case6">OptionU8</TD></TR>
+</TABLE>>];
+		}
+		subgraph cluster__name_resolution_option_value {
+			label="PcapngOptions::NameResolutionOptionValue";
+			graph[style=dotted];
+
+			name_resolution_option_value__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="value_pos">0</TD><TD PORT="value_size">...</TD><TD>switch (code)</TD><TD PORT="value_type">value</TD></TR>
+			</TABLE>>];
+			name_resolution_option_value__inst__code [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>code</TD><TD>Kaitai::Struct::Stream::resolve_enum(PcapngOptions::NAME_RESOLUTION_OPTION_CODE, _parent.code)</TD></TR>
+			</TABLE>>];
+name_resolution_option_value__seq_value_switch [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<TR><TD BGCOLOR="#F0F2E4">case</TD><TD BGCOLOR="#F0F2E4">type</TD></TR>
+	<TR><TD>:name_resolution_option_code_ns_dnsip4addr</TD><TD PORT="case0">OptionIpv4</TD></TR>
+	<TR><TD>:name_resolution_option_code_ns_dnsip6addr</TD><TD PORT="case1">OptionIpv6</TD></TR>
+	<TR><TD>:name_resolution_option_code_ns_dnsname</TD><TD PORT="case2">OptionText</TD></TR>
+</TABLE>>];
+		}
+		subgraph cluster__option {
+			label="PcapngOptions::Option";
+			graph[style=dotted];
+
+			option__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="code_pos">0</TD><TD PORT="code_size">2</TD><TD>u2</TD><TD PORT="code_type">code</TD></TR>
+				<TR><TD PORT="len_value_pos">2</TD><TD PORT="len_value_size">2</TD><TD>u2</TD><TD PORT="len_value_type">len_value</TD></TR>
+				<TR><TD PORT="value_pos">4</TD><TD PORT="value_size">...</TD><TD>switch (value_kind)</TD><TD PORT="value_type">value</TD></TR>
+				<TR><TD PORT="padding_pos">...</TD><TD PORT="padding_size">(4 - len_value % 4) % 4</TD><TD></TD><TD PORT="padding_type">padding</TD></TR>
+			</TABLE>>];
+			option__inst__value_kind [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>value_kind</TD><TD>( ((code == 1) || (code == 2988) || (code == 2989) || (code == 19372) || (code == 19373))  ? :option_kind_common : _parent.kind)</TD></TR>
+			</TABLE>>];
+option__seq_value_switch [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<TR><TD BGCOLOR="#F0F2E4">case</TD><TD BGCOLOR="#F0F2E4">type</TD></TR>
+	<TR><TD>:option_kind_common</TD><TD PORT="case0">CommonOptionValue</TD></TR>
+	<TR><TD>:option_kind_enhanced_packet</TD><TD PORT="case1">EnhancedPacketOptionValue</TD></TR>
+	<TR><TD>:option_kind_interface_description</TD><TD PORT="case2">InterfaceDescriptionOptionValue</TD></TR>
+	<TR><TD>:option_kind_interface_statistics</TD><TD PORT="case3">InterfaceStatisticsOptionValue</TD></TR>
+	<TR><TD>:option_kind_name_resolution</TD><TD PORT="case4">NameResolutionOptionValue</TD></TR>
+	<TR><TD>:option_kind_packet</TD><TD PORT="case5">PacketOptionValue</TD></TR>
+	<TR><TD>:option_kind_section_header</TD><TD PORT="case6">SectionHeaderOptionValue</TD></TR>
+</TABLE>>];
+		}
+		subgraph cluster__option_eui48 {
+			label="PcapngOptions::OptionEui48";
+			graph[style=dotted];
+
+			option_eui48__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="address_pos">0</TD><TD PORT="address_size">6</TD><TD></TD><TD PORT="address_type">address</TD></TR>
+				<TR><TD COLSPAN="4" PORT="address__if">if _io.size == 6</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__option_eui64 {
+			label="PcapngOptions::OptionEui64";
+			graph[style=dotted];
+
+			option_eui64__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="address_pos">0</TD><TD PORT="address_size">8</TD><TD></TD><TD PORT="address_type">address</TD></TR>
+				<TR><TD COLSPAN="4" PORT="address__if">if _io.size == 8</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__option_ipv4 {
+			label="PcapngOptions::OptionIpv4";
+			graph[style=dotted];
+
+			option_ipv4__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="address_pos">0</TD><TD PORT="address_size">4</TD><TD></TD><TD PORT="address_type">address</TD></TR>
+				<TR><TD COLSPAN="4" PORT="address__if">if _io.size == 4</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__option_ipv4_with_netmask {
+			label="PcapngOptions::OptionIpv4WithNetmask";
+			graph[style=dotted];
+
+			option_ipv4_with_netmask__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="address_pos">0</TD><TD PORT="address_size">4</TD><TD></TD><TD PORT="address_type">address</TD></TR>
+				<TR><TD COLSPAN="4" PORT="address__if">if _io.size == 8</TD></TR>
+				<TR><TD PORT="netmask_pos">4</TD><TD PORT="netmask_size">4</TD><TD></TD><TD PORT="netmask_type">netmask</TD></TR>
+				<TR><TD COLSPAN="4" PORT="netmask__if">if _io.size == 8</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__option_ipv6 {
+			label="PcapngOptions::OptionIpv6";
+			graph[style=dotted];
+
+			option_ipv6__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="address_pos">0</TD><TD PORT="address_size">16</TD><TD></TD><TD PORT="address_type">address</TD></TR>
+				<TR><TD COLSPAN="4" PORT="address__if">if _io.size == 16</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__option_ipv6_with_prefix {
+			label="PcapngOptions::OptionIpv6WithPrefix";
+			graph[style=dotted];
+
+			option_ipv6_with_prefix__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="address_pos">0</TD><TD PORT="address_size">16</TD><TD></TD><TD PORT="address_type">address</TD></TR>
+				<TR><TD COLSPAN="4" PORT="address__if">if _io.size == 17</TD></TR>
+				<TR><TD PORT="prefix_length_pos">16</TD><TD PORT="prefix_length_size">1</TD><TD>u1</TD><TD PORT="prefix_length_type">prefix_length</TD></TR>
+				<TR><TD COLSPAN="4" PORT="prefix_length__if">if _io.size == 17</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__option_process_thread {
+			label="PcapngOptions::OptionProcessThread";
+			graph[style=dotted];
+
+			option_process_thread__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="process_id_pos">0</TD><TD PORT="process_id_size">4</TD><TD>u4</TD><TD PORT="process_id_type">process_id</TD></TR>
+				<TR><TD COLSPAN="4" PORT="process_id__if">if _io.size == 8</TD></TR>
+				<TR><TD PORT="thread_id_pos">4</TD><TD PORT="thread_id_size">4</TD><TD>u4</TD><TD PORT="thread_id_type">thread_id</TD></TR>
+				<TR><TD COLSPAN="4" PORT="thread_id__if">if _io.size == 8</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__option_s8 {
+			label="PcapngOptions::OptionS8";
+			graph[style=dotted];
+
+			option_s8__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="value_pos">0</TD><TD PORT="value_size">8</TD><TD>s8</TD><TD PORT="value_type">value</TD></TR>
+				<TR><TD COLSPAN="4" PORT="value__if">if _io.size == 8</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__option_text {
+			label="PcapngOptions::OptionText";
+			graph[style=dotted];
+
+			option_text__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="value_pos">0</TD><TD PORT="value_size">⇲</TD><TD>str(UTF-8)</TD><TD PORT="value_type">value</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__option_timestamp {
+			label="PcapngOptions::OptionTimestamp";
+			graph[style=dotted];
+
+			option_timestamp__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="ts_high_pos">0</TD><TD PORT="ts_high_size">4</TD><TD>u4</TD><TD PORT="ts_high_type">ts_high</TD></TR>
+				<TR><TD COLSPAN="4" PORT="ts_high__if">if _io.size == 8</TD></TR>
+				<TR><TD PORT="ts_low_pos">4</TD><TD PORT="ts_low_size">4</TD><TD>u4</TD><TD PORT="ts_low_type">ts_low</TD></TR>
+				<TR><TD COLSPAN="4" PORT="ts_low__if">if _io.size == 8</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__option_u1 {
+			label="PcapngOptions::OptionU1";
+			graph[style=dotted];
+
+			option_u1__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="value_pos">0</TD><TD PORT="value_size">1</TD><TD>u1</TD><TD PORT="value_type">value</TD></TR>
+				<TR><TD COLSPAN="4" PORT="value__if">if _io.size == 1</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__option_u4 {
+			label="PcapngOptions::OptionU4";
+			graph[style=dotted];
+
+			option_u4__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="value_pos">0</TD><TD PORT="value_size">4</TD><TD>u4</TD><TD PORT="value_type">value</TD></TR>
+				<TR><TD COLSPAN="4" PORT="value__if">if _io.size == 4</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__option_u8 {
+			label="PcapngOptions::OptionU8";
+			graph[style=dotted];
+
+			option_u8__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="value_pos">0</TD><TD PORT="value_size">8</TD><TD>u8</TD><TD PORT="value_type">value</TD></TR>
+				<TR><TD COLSPAN="4" PORT="value__if">if _io.size == 8</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__option_with_kind {
+			label="PcapngOptions::OptionWithKind";
+			graph[style=dotted];
+
+			option_with_kind__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="value_kind_pos">0</TD><TD PORT="value_kind_size">1</TD><TD>u1</TD><TD PORT="value_kind_type">value_kind</TD></TR>
+				<TR><TD COLSPAN="4" PORT="value_kind__if">if _io.size &gt;= 1</TD></TR>
+				<TR><TD PORT="data_pos">1</TD><TD PORT="data_size">⇲</TD><TD></TD><TD PORT="data_type">data</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__packet_option_value {
+			label="PcapngOptions::PacketOptionValue";
+			graph[style=dotted];
+
+			packet_option_value__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="value_pos">0</TD><TD PORT="value_size">...</TD><TD>switch (code)</TD><TD PORT="value_type">value</TD></TR>
+			</TABLE>>];
+			packet_option_value__inst__code [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>code</TD><TD>Kaitai::Struct::Stream::resolve_enum(PcapngOptions::PACKET_OPTION_CODE, _parent.code)</TD></TR>
+			</TABLE>>];
+packet_option_value__seq_value_switch [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<TR><TD BGCOLOR="#F0F2E4">case</TD><TD BGCOLOR="#F0F2E4">type</TD></TR>
+	<TR><TD>:packet_option_code_pack_flags</TD><TD PORT="case0">OptionU4</TD></TR>
+	<TR><TD>:packet_option_code_pack_hash</TD><TD PORT="case1">OptionWithKind</TD></TR>
+</TABLE>>];
+		}
+		subgraph cluster__section_header_option_value {
+			label="PcapngOptions::SectionHeaderOptionValue";
+			graph[style=dotted];
+
+			section_header_option_value__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="value_pos">0</TD><TD PORT="value_size">...</TD><TD>switch (code)</TD><TD PORT="value_type">value</TD></TR>
+			</TABLE>>];
+			section_header_option_value__inst__code [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>code</TD><TD>Kaitai::Struct::Stream::resolve_enum(PcapngOptions::SECTION_HEADER_OPTION_CODE, _parent.code)</TD></TR>
+			</TABLE>>];
+section_header_option_value__seq_value_switch [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<TR><TD BGCOLOR="#F0F2E4">case</TD><TD BGCOLOR="#F0F2E4">type</TD></TR>
+	<TR><TD>:section_header_option_code_shb_hardware</TD><TD PORT="case0">OptionText</TD></TR>
+	<TR><TD>:section_header_option_code_shb_os</TD><TD PORT="case1">OptionText</TD></TR>
+	<TR><TD>:section_header_option_code_shb_userappl</TD><TD PORT="case2">OptionText</TD></TR>
+</TABLE>>];
+		}
+	}
+	pcapng_options__seq:entries_type -> option__seq [style=bold];
+	option__seq:code_type -> pcapng_options__seq:entries__repeat [color="#404040"];
+	common_option_value__seq:value_type -> common_option_value__seq_value_switch [style=bold];
+	common_option_value__seq_value_switch:case0 -> option_text__seq [style=bold];
+	common_option_value__seq_value_switch:case1 -> custom_option_bytes__seq [style=bold];
+	common_option_value__seq_value_switch:case2 -> custom_option_bytes__seq [style=bold];
+	common_option_value__seq_value_switch:case3 -> custom_option_text__seq [style=bold];
+	common_option_value__seq_value_switch:case4 -> custom_option_text__seq [style=bold];
+	common_option_value__inst__code:code_type -> common_option_value__seq:value_type [color="#404040"];
+	option__seq:code_type -> common_option_value__inst__code [color="#404040"];
+	enhanced_packet_option_value__seq:value_type -> enhanced_packet_option_value__seq_value_switch [style=bold];
+	enhanced_packet_option_value__seq_value_switch:case0 -> option_u8__seq [style=bold];
+	enhanced_packet_option_value__seq_value_switch:case1 -> option_u4__seq [style=bold];
+	enhanced_packet_option_value__seq_value_switch:case2 -> option_with_kind__seq [style=bold];
+	enhanced_packet_option_value__seq_value_switch:case3 -> option_u8__seq [style=bold];
+	enhanced_packet_option_value__seq_value_switch:case4 -> option_process_thread__seq [style=bold];
+	enhanced_packet_option_value__seq_value_switch:case5 -> option_u4__seq [style=bold];
+	enhanced_packet_option_value__seq_value_switch:case6 -> option_with_kind__seq [style=bold];
+	enhanced_packet_option_value__inst__code:code_type -> enhanced_packet_option_value__seq:value_type [color="#404040"];
+	option__seq:code_type -> enhanced_packet_option_value__inst__code [color="#404040"];
+	interface_description_option_value__seq:value_type -> interface_description_option_value__seq_value_switch [style=bold];
+	interface_description_option_value__seq_value_switch:case0 -> option_text__seq [style=bold];
+	interface_description_option_value__seq_value_switch:case1 -> option_eui64__seq [style=bold];
+	interface_description_option_value__seq_value_switch:case2 -> option_u1__seq [style=bold];
+	interface_description_option_value__seq_value_switch:case3 -> option_with_kind__seq [style=bold];
+	interface_description_option_value__seq_value_switch:case4 -> option_text__seq [style=bold];
+	interface_description_option_value__seq_value_switch:case5 -> option_text__seq [style=bold];
+	interface_description_option_value__seq_value_switch:case6 -> option_ipv4_with_netmask__seq [style=bold];
+	interface_description_option_value__seq_value_switch:case7 -> option_ipv6_with_prefix__seq [style=bold];
+	interface_description_option_value__seq_value_switch:case8 -> option_eui48__seq [style=bold];
+	interface_description_option_value__seq_value_switch:case9 -> option_text__seq [style=bold];
+	interface_description_option_value__seq_value_switch:case10 -> option_text__seq [style=bold];
+	interface_description_option_value__seq_value_switch:case11 -> option_u8__seq [style=bold];
+	interface_description_option_value__seq_value_switch:case12 -> option_u8__seq [style=bold];
+	interface_description_option_value__seq_value_switch:case13 -> option_s8__seq [style=bold];
+	interface_description_option_value__seq_value_switch:case14 -> option_u1__seq [style=bold];
+	interface_description_option_value__seq_value_switch:case15 -> option_u8__seq [style=bold];
+	interface_description_option_value__seq_value_switch:case16 -> option_u4__seq [style=bold];
+	interface_description_option_value__inst__code:code_type -> interface_description_option_value__seq:value_type [color="#404040"];
+	option__seq:code_type -> interface_description_option_value__inst__code [color="#404040"];
+	interface_statistics_option_value__seq:value_type -> interface_statistics_option_value__seq_value_switch [style=bold];
+	interface_statistics_option_value__seq_value_switch:case0 -> option_timestamp__seq [style=bold];
+	interface_statistics_option_value__seq_value_switch:case1 -> option_u8__seq [style=bold];
+	interface_statistics_option_value__seq_value_switch:case2 -> option_u8__seq [style=bold];
+	interface_statistics_option_value__seq_value_switch:case3 -> option_u8__seq [style=bold];
+	interface_statistics_option_value__seq_value_switch:case4 -> option_u8__seq [style=bold];
+	interface_statistics_option_value__seq_value_switch:case5 -> option_timestamp__seq [style=bold];
+	interface_statistics_option_value__seq_value_switch:case6 -> option_u8__seq [style=bold];
+	interface_statistics_option_value__inst__code:code_type -> interface_statistics_option_value__seq:value_type [color="#404040"];
+	option__seq:code_type -> interface_statistics_option_value__inst__code [color="#404040"];
+	name_resolution_option_value__seq:value_type -> name_resolution_option_value__seq_value_switch [style=bold];
+	name_resolution_option_value__seq_value_switch:case0 -> option_ipv4__seq [style=bold];
+	name_resolution_option_value__seq_value_switch:case1 -> option_ipv6__seq [style=bold];
+	name_resolution_option_value__seq_value_switch:case2 -> option_text__seq [style=bold];
+	name_resolution_option_value__inst__code:code_type -> name_resolution_option_value__seq:value_type [color="#404040"];
+	option__seq:code_type -> name_resolution_option_value__inst__code [color="#404040"];
+	option__seq:value_type -> option__seq_value_switch [style=bold];
+	option__seq_value_switch:case0 -> common_option_value__seq [style=bold];
+	option__seq_value_switch:case1 -> enhanced_packet_option_value__seq [style=bold];
+	option__seq_value_switch:case2 -> interface_description_option_value__seq [style=bold];
+	option__seq_value_switch:case3 -> interface_statistics_option_value__seq [style=bold];
+	option__seq_value_switch:case4 -> name_resolution_option_value__seq [style=bold];
+	option__seq_value_switch:case5 -> packet_option_value__seq [style=bold];
+	option__seq_value_switch:case6 -> section_header_option_value__seq [style=bold];
+	option__inst__value_kind:value_kind_type -> option__seq:value_type [color="#404040"];
+	option__seq:len_value_type -> option__seq:padding_size [color="#404040"];
+	option__seq:code_type -> option__inst__value_kind [color="#404040"];
+	pcapng_options__params:kind_type -> option__inst__value_kind [color="#404040"];
+	packet_option_value__seq:value_type -> packet_option_value__seq_value_switch [style=bold];
+	packet_option_value__seq_value_switch:case0 -> option_u4__seq [style=bold];
+	packet_option_value__seq_value_switch:case1 -> option_with_kind__seq [style=bold];
+	packet_option_value__inst__code:code_type -> packet_option_value__seq:value_type [color="#404040"];
+	option__seq:code_type -> packet_option_value__inst__code [color="#404040"];
+	section_header_option_value__seq:value_type -> section_header_option_value__seq_value_switch [style=bold];
+	section_header_option_value__seq_value_switch:case0 -> option_text__seq [style=bold];
+	section_header_option_value__seq_value_switch:case1 -> option_text__seq [style=bold];
+	section_header_option_value__seq_value_switch:case2 -> option_text__seq [style=bold];
+	section_header_option_value__inst__code:code_type -> section_header_option_value__seq:value_type [color="#404040"];
+	option__seq:code_type -> section_header_option_value__inst__code [color="#404040"];
+}

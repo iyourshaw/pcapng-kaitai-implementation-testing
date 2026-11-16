@@ -75,7 +75,7 @@ def test_interface_stats(name):
 
 
 def test_link_frames(name):
-    """Each packet parses with link_frame, and its link-layer fields match tshark."""
+    """Each packet parses with pcapng_link_frame, and its link-layer fields match tshark."""
     data = summary(name)["_packet_data"]
     want = expected(name)["packets"]
     assert len(data) == len(want)

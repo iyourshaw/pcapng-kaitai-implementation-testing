@@ -1,0 +1,19 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__pcapng_section_header_block {
+		label="PcapngSectionHeaderBlock";
+		graph[style=dotted];
+
+		pcapng_section_header_block__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="byte_order_magic_pos">0</TD><TD PORT="byte_order_magic_size">4</TD><TD>u4</TD><TD PORT="byte_order_magic_type">byte_order_magic</TD></TR>
+			<TR><TD COLSPAN="4" PORT="byte_order_magic__valid">must be equal to 439041101</TD></TR>
+			<TR><TD PORT="version_major_pos">4</TD><TD PORT="version_major_size">2</TD><TD>u2</TD><TD PORT="version_major_type">version_major</TD></TR>
+			<TR><TD PORT="version_minor_pos">6</TD><TD PORT="version_minor_size">2</TD><TD>u2</TD><TD PORT="version_minor_type">version_minor</TD></TR>
+			<TR><TD PORT="section_length_pos">8</TD><TD PORT="section_length_size">8</TD><TD>s8</TD><TD PORT="section_length_type">section_length</TD></TR>
+			<TR><TD PORT="options_pos">16</TD><TD PORT="options_size">...</TD><TD>PcapngOptions</TD><TD PORT="options_type">options</TD></TR>
+		</TABLE>>];
+	}
+	pcapng_section_header_block__seq:options_type -> pcapng_options__seq [style=bold];
+}

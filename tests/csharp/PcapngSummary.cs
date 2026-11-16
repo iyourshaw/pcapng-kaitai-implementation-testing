@@ -57,7 +57,7 @@ namespace PcapngTests
             {
                 var sif = parsed.Sections[si];
                 var sec = sif.Section;
-                var shb = (Section.SectionHeaderBlock) sec.Header.Body;
+                var shb = (PcapngSectionHeaderBlock) sec.Header.Body;
                 sections.Add(new JsonObject
                 {
                     ["endian"] = sif.ByteOrderMagic.SequenceEqual(BomLe) ? "le" : "be",
@@ -89,14 +89,14 @@ namespace PcapngTests
 
                     switch (blk.Body)
                     {
-                        case Section.InterfaceDescriptionBlock idb:
+                        case PcapngInterfaceDescriptionBlock idb:
                         {
                             int? tsresol = null;
                             long? tsoffset = null;
                             foreach (var o in Entries(idb.Options))
                             {
-                                if (o.Code == 9 && tsresol == null) tsresol = ((Section.OptionU1) o.Value).Value;
-                                if (o.Code == 14 && tsoffset == null) tsoffset = ((Section.OptionS8) o.Value).Value;
+                                if (o.Code == 9 && tsresol == null) tsresol = ((PcapngOptions.OptionU1) Typed(o)).Value;
+                                if (o.Code == 14 && tsoffset == null) tsoffset = ((PcapngOptions.OptionS8) Typed(o)).Value;
                             }
                             var iface = new Iface
                             {
@@ -119,7 +119,7 @@ namespace PcapngTests
                             });
                             break;
                         }
-                        case Section.EnhancedPacketBlock epb:
+                        case PcapngEnhancedPacketBlock epb:
                         {
                             var iface = ifaces[firstIface + (int) epb.InterfaceId];
                             packets.Add(Packet(si, iface, epb.InterfaceId, epb.LenPacketData, epb.LenOriginal,
@@ -127,7 +127,7 @@ namespace PcapngTests
                             packetData.Add(new PacketData(LinkTypeOf(iface), epb.PacketData));
                             break;
                         }
-                        case Section.PacketBlock pb:
+                        case PcapngPacketBlock pb:
                         {
                             var iface = ifaces[firstIface + pb.InterfaceId];
                             packets.Add(Packet(si, iface, pb.InterfaceId, pb.LenPacketData, pb.LenOriginal,
@@ -135,7 +135,7 @@ namespace PcapngTests
                             packetData.Add(new PacketData(LinkTypeOf(iface), pb.PacketData));
                             break;
                         }
-                        case Section.SimplePacketBlock spb:
+                        case PcapngSimplePacketBlock spb:
                         {
                             var iface = ifaces[firstIface];
                             long cap = Math.Min(spb.LenOriginal, spb.PacketDataAndPadding.Length);
@@ -152,12 +152,12 @@ namespace PcapngTests
                             packetData.Add(new PacketData(LinkTypeOf(iface), spb.PacketDataAndPadding[..(int) cap]));
                             break;
                         }
-                        case Section.NameResolutionBlock nrb:
+                        case PcapngNameResolutionBlock nrb:
                             foreach (var rec in nrb.Records)
                             {
                                 if (rec.RecordType == 0) continue;
                                 var r = new JsonObject { ["record_type"] = rec.RecordType };
-                                if (rec.Value is Section.NamedAddress na)
+                                if (rec.Value is PcapngNameResolutionBlock.NamedAddress na)
                                 {
                                     r["address"] = Convert.ToHexStringLower(na.Address);
                                     r["names"] = new JsonArray(na.Names.Where(n => n.Length > 0)
@@ -170,7 +170,7 @@ namespace PcapngTests
                                 names.Add(r);
                             }
                             break;
-                        case Section.InterfaceStatisticsBlock isb:
+                        case PcapngInterfaceStatisticsBlock isb:
                         {
                             var st = new JsonObject
                             {
@@ -181,19 +181,19 @@ namespace PcapngTests
                             };
                             foreach (var o in Entries(isb.Options))
                             {
-                                if ((o.Code == 2 || o.Code == 3) && o.Value is Section.OptionTimestamp t && t.TsHigh != null)
+                                if ((o.Code == 2 || o.Code == 3) && Typed(o) is PcapngOptions.OptionTimestamp t && t.TsHigh != null)
                                 {
                                     st[o.Code == 2 ? "starttime" : "endtime"] = new JsonArray(t.TsHigh, t.TsLow);
                                 }
                                 else if (IsbCounters.TryGetValue(o.Code, out var counter)
-                                         && o.Value is Section.OptionU8 u && u.Value != null)
+                                         && Typed(o) is PcapngOptions.OptionU8 u && u.Value != null)
                                 {
                                     st[counter] = u.Value;
                                 }
                                 else if (o.Code == 1)
                                 {
                                     if (st["comments"] is not JsonArray c) st["comments"] = c = new JsonArray();
-                                    c.Add(((Section.OptionText) o.Value).Value);
+                                    c.Add(((PcapngOptions.OptionText) Typed(o)).Value);
                                 }
                             }
                             stats.Add(st);
@@ -222,7 +222,7 @@ namespace PcapngTests
         private static int LinkTypeOf(Iface i) => i.LinkType is long lt ? (int) lt : -1;
 
         private static JsonObject Packet(int section, Iface iface, long interfaceId, long capLen, long origLen,
-                uint tsHigh, uint tsLow, Section.Options options)
+                uint tsHigh, uint tsLow, PcapngOptions options)
         {
             var ts = ((BigInteger) tsHigh << 32) | tsLow;
             return new JsonObject
@@ -245,23 +245,40 @@ namespace PcapngTests
             return ns + tsoffset * NsPerS;
         }
 
-        private static IEnumerable<Section.Option> Entries(Section.Options options) =>
-            options?.Entries ?? Enumerable.Empty<Section.Option>();
+        /// <summary>
+        /// An option's typed value (OptionText, OptionU1, ...). <c>o.Value</c> is the wrapper
+        /// for the block's kind of options, which maps the code to that type; the wrappers
+        /// share no base type, so each is unwrapped here.
+        /// </summary>
+        public static object Typed(PcapngOptions.Option o) => o.Value switch
+        {
+            PcapngOptions.CommonOptionValue v => v.Value,
+            PcapngOptions.SectionHeaderOptionValue v => v.Value,
+            PcapngOptions.InterfaceDescriptionOptionValue v => v.Value,
+            PcapngOptions.EnhancedPacketOptionValue v => v.Value,
+            PcapngOptions.PacketOptionValue v => v.Value,
+            PcapngOptions.NameResolutionOptionValue v => v.Value,
+            PcapngOptions.InterfaceStatisticsOptionValue v => v.Value,
+            var raw => raw,
+        };
 
-        private static string FirstText(Section.Options options, int code) =>
-            Entries(options).Where(o => o.Code == code).Select(o => ((Section.OptionText) o.Value).Value).FirstOrDefault();
+        private static IEnumerable<PcapngOptions.Option> Entries(PcapngOptions options) =>
+            options?.Entries ?? Enumerable.Empty<PcapngOptions.Option>();
 
-        private static JsonArray Comments(Section.Options options) =>
+        private static string FirstText(PcapngOptions options, int code) =>
+            Entries(options).Where(o => o.Code == code).Select(o => ((PcapngOptions.OptionText) Typed(o)).Value).FirstOrDefault();
+
+        private static JsonArray Comments(PcapngOptions options) =>
             new(Entries(options).Where(o => o.Code == 1)
-                .Select(o => (JsonNode) ((Section.OptionText) o.Value).Value).ToArray());
+                .Select(o => (JsonNode) ((PcapngOptions.OptionText) Typed(o)).Value).ToArray());
 
         /// <summary>
-        /// Parse one packet with link_frame and pick out the fields the golden files
+        /// Parse one packet with pcapng_link_frame and pick out the fields the golden files
         /// hold, plus ether_type_name (null when the ether type isn't in ether_type_enum).
         /// </summary>
         public static JsonObject LinkFields(int linkType, byte[] data)
         {
-            var frame = new LinkFrame((ushort) linkType, new KaitaiStream(data));
+            var frame = new PcapngLinkFrame((ushort) linkType, new KaitaiStream(data));
             var m = new JsonObject();
             switch (linkType)
             {

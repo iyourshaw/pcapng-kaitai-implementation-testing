@@ -6,7 +6,7 @@
 # arbitrary precision, so ts_ns is exact.
 
 require "pcapng"
-require "link_frame"
+require "pcapng_link_frame"
 
 module PcapngSummary
   BOM_LE = "\x4d\x3c\x2b\x1a".b
@@ -42,11 +42,11 @@ module PcapngSummary
 
   def first_text(options, code)
     o = entries(options).find { |e| e.code == code }
-    o&.value&.value
+    o&.value&.value&.value
   end
 
   def comments(options)
-    entries(options).select { |e| e.code == 1 }.map { |e| e.value.value }
+    entries(options).select { |e| e.code == 1 }.map { |e| e.value.value.value }
   end
 
   def packet(si, iface, interface_id, cap_len, orig_len, ts_high, ts_low, options)
@@ -92,8 +92,8 @@ module PcapngSummary
         body = b.body
         case enum_int(b.block_type, Pcapng::I__BLOCK_TYPE)
         when 1 # interface_description
-          tsresol = entries(body.options).find { |o| o.code == 9 }&.value&.value
-          tsoffset = entries(body.options).find { |o| o.code == 14 }&.value&.value
+          tsresol = entries(body.options).find { |o| o.code == 9 }&.value&.value&.value
+          tsoffset = entries(body.options).find { |o| o.code == 14 }&.value&.value&.value
           iface = {
             "link_type" => enum_int(body.link_type, Pcap::I__LINKTYPE),
             "snaplen" => body.snaplen,
@@ -138,12 +138,12 @@ module PcapngSummary
           st = { "section" => si, "interface_id" => body.interface_id,
                  "ts_high" => body.ts_high, "ts_low" => body.ts_low }
           entries(body.options).each do |o|
-            if [2, 3].include?(o.code) && !o.value.ts_high.nil?
-              st[o.code == 2 ? "starttime" : "endtime"] = [o.value.ts_high, o.value.ts_low]
-            elsif ISB_COUNTERS.key?(o.code) && !o.value.value.nil?
-              st[ISB_COUNTERS[o.code]] = o.value.value
+            if [2, 3].include?(o.code) && !o.value.value.ts_high.nil?
+              st[o.code == 2 ? "starttime" : "endtime"] = [o.value.value.ts_high, o.value.value.ts_low]
+            elsif ISB_COUNTERS.key?(o.code) && !o.value.value.value.nil?
+              st[ISB_COUNTERS[o.code]] = o.value.value.value
             elsif o.code == 1
-              (st["comments"] ||= []) << o.value.value
+              (st["comments"] ||= []) << o.value.value.value
             end
           end
           stats << st
@@ -166,10 +166,10 @@ module PcapngSummary
     }, packet_data]
   end
 
-  # Parse one packet with link_frame and pick out the fields the golden files
+  # Parse one packet with pcapng_link_frame and pick out the fields the golden files
   # hold, plus ether_type_name (nil when the ether type isn't in ether_type_enum).
   def link_fields(link_type, data)
-    frame = LinkFrame.new(Kaitai::Struct::Stream.new(data), nil, nil, link_type)
+    frame = PcapngLinkFrame.new(Kaitai::Struct::Stream.new(data), nil, nil, link_type)
     body = frame.body
     case link_type
     when 1

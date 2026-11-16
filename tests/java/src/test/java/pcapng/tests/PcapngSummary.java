@@ -9,10 +9,18 @@ import java.util.List;
 import java.util.Map;
 import pcapng.formats.EthernetFrame;
 import pcapng.formats.Ieee80211;
-import pcapng.formats.LinkFrame;
+import pcapng.formats.PcapngLinkFrame;
 import pcapng.formats.LinuxSll;
 import pcapng.formats.Pcapng;
 import pcapng.formats.Pcapng.Section;
+import pcapng.formats.PcapngEnhancedPacketBlock;
+import pcapng.formats.PcapngInterfaceDescriptionBlock;
+import pcapng.formats.PcapngInterfaceStatisticsBlock;
+import pcapng.formats.PcapngNameResolutionBlock;
+import pcapng.formats.PcapngOptions;
+import pcapng.formats.PcapngPacketBlock;
+import pcapng.formats.PcapngSectionHeaderBlock;
+import pcapng.formats.PcapngSimplePacketBlock;
 import pcapng.formats.Radiotap;
 
 /**
@@ -46,7 +54,7 @@ final class PcapngSummary {
         for (int si = 0; si < parsed.sections().size(); si++) {
             Pcapng.SectionInFile sif = parsed.sections().get(si);
             Section sec = sif.section();
-            Section.SectionHeaderBlock shb = (Section.SectionHeaderBlock) sec.header().body();
+            PcapngSectionHeaderBlock shb = (PcapngSectionHeaderBlock) sec.header().body();
             Map<String, Object> s = new LinkedHashMap<>();
             s.put("endian", java.util.Arrays.equals(sif.byteOrderMagic(), BOM_LE) ? "le" : "be");
             s.put("version", List.of(shb.versionMajor(), shb.versionMinor()));
@@ -76,7 +84,7 @@ final class PcapngSummary {
                 blocks.add(blk.blockType() != null ? blk.blockType().name().toLowerCase() : "unknown");
                 Object body = blk.body();
 
-                if (body instanceof Section.InterfaceDescriptionBlock idb) {
+                if (body instanceof PcapngInterfaceDescriptionBlock idb) {
                     Map<String, Object> m = new LinkedHashMap<>();
                     m.put("section", si);
                     m.put("link_type", idb.linkType() != null ? idb.linkType().id() : null);
@@ -85,25 +93,25 @@ final class PcapngSummary {
                     m.put("description", firstText(idb.options(), 3));
                     Integer tsresol = null;
                     Long tsoffset = null;
-                    for (Section.Option o : entries(idb.options())) {
-                        if (o.code() == 9 && tsresol == null) tsresol = ((Section.OptionU1) o.value()).value();
-                        if (o.code() == 14 && tsoffset == null) tsoffset = ((Section.OptionS8) o.value()).value();
+                    for (PcapngOptions.Option o : entries(idb.options())) {
+                        if (o.code() == 9 && tsresol == null) tsresol = ((PcapngOptions.OptionU1) typed(o)).value();
+                        if (o.code() == 14 && tsoffset == null) tsoffset = ((PcapngOptions.OptionS8) typed(o)).value();
                     }
                     m.put("tsresol", tsresol != null ? tsresol : 6);
                     m.put("tsoffset", tsoffset != null ? tsoffset : 0L);
                     m.put("comments", comments(idb.options()));
                     interfaces.add(m);
-                } else if (body instanceof Section.EnhancedPacketBlock epb) {
+                } else if (body instanceof PcapngEnhancedPacketBlock epb) {
                     packets.add(packet(si, interfaces.get(firstIface + (int) epb.interfaceId()), epb.interfaceId(),
                             epb.lenPacketData(), epb.lenOriginal(), epb.tsHigh(), epb.tsLow(), epb.options()));
                     packetData.add(new PacketData(linkType(interfaces.get(firstIface + (int) epb.interfaceId())),
                             epb.packetData()));
-                } else if (body instanceof Section.PacketBlock pb) {
+                } else if (body instanceof PcapngPacketBlock pb) {
                     packets.add(packet(si, interfaces.get(firstIface + pb.interfaceId()), pb.interfaceId(),
                             pb.lenPacketData(), pb.lenOriginal(), pb.tsHigh(), pb.tsLow(), pb.options()));
                     packetData.add(new PacketData(linkType(interfaces.get(firstIface + pb.interfaceId())),
                             pb.packetData()));
-                } else if (body instanceof Section.SimplePacketBlock spb) {
+                } else if (body instanceof PcapngSimplePacketBlock spb) {
                     Map<String, Object> idb = interfaces.get(firstIface);
                     long snap = (long) idb.get("snaplen");
                     long cap = Math.min(spb.lenOriginal(), spb.packetDataAndPadding().length);
@@ -118,12 +126,12 @@ final class PcapngSummary {
                     packets.add(p);
                     packetData.add(new PacketData(linkType(idb),
                             java.util.Arrays.copyOf(spb.packetDataAndPadding(), (int) cap)));
-                } else if (body instanceof Section.NameResolutionBlock nrb) {
-                    for (Section.NameRecord rec : nrb.records()) {
+                } else if (body instanceof PcapngNameResolutionBlock nrb) {
+                    for (PcapngNameResolutionBlock.NameRecord rec : nrb.records()) {
                         if (rec.recordType() == 0) continue;
                         Map<String, Object> r = new LinkedHashMap<>();
                         r.put("record_type", rec.recordType());
-                        if (rec.value() instanceof Section.NamedAddress na) {
+                        if (rec.value() instanceof PcapngNameResolutionBlock.NamedAddress na) {
                             r.put("address", HexFormat.of().formatHex(na.address()));
                             r.put("names", na.names().stream().filter(n -> !n.isEmpty()).toList());
                         } else {
@@ -131,23 +139,23 @@ final class PcapngSummary {
                         }
                         names.add(r);
                     }
-                } else if (body instanceof Section.InterfaceStatisticsBlock isb) {
+                } else if (body instanceof PcapngInterfaceStatisticsBlock isb) {
                     Map<String, Object> st = new LinkedHashMap<>();
                     st.put("section", si);
                     st.put("interface_id", isb.interfaceId());
                     st.put("ts_high", isb.tsHigh());
                     st.put("ts_low", isb.tsLow());
-                    for (Section.Option o : entries(isb.options())) {
-                        if ((o.code() == 2 || o.code() == 3) && o.value() instanceof Section.OptionTimestamp t
+                    for (PcapngOptions.Option o : entries(isb.options())) {
+                        if ((o.code() == 2 || o.code() == 3) && typed(o) instanceof PcapngOptions.OptionTimestamp t
                                 && t.tsHigh() != null) {
                             st.put(o.code() == 2 ? "starttime" : "endtime", List.of(t.tsHigh(), t.tsLow()));
-                        } else if (ISB_COUNTERS.containsKey(o.code()) && o.value() instanceof Section.OptionU8 u
+                        } else if (ISB_COUNTERS.containsKey(o.code()) && typed(o) instanceof PcapngOptions.OptionU8 u
                                 && u.value() != null) {
                             st.put(ISB_COUNTERS.get(o.code()), u.value());
                         } else if (o.code() == 1) {
                             @SuppressWarnings("unchecked")
                             List<String> c = (List<String>) st.computeIfAbsent("comments", k -> new ArrayList<String>());
-                            c.add(((Section.OptionText) o.value()).value());
+                            c.add(((PcapngOptions.OptionText) typed(o)).value());
                         }
                     }
                     stats.add(st);
@@ -172,7 +180,7 @@ final class PcapngSummary {
     }
 
     private static Map<String, Object> packet(int section, Map<String, Object> idb, long interfaceId,
-            long capLen, long origLen, long tsHigh, long tsLow, Section.Options options) {
+            long capLen, long origLen, long tsHigh, long tsLow, PcapngOptions options) {
         Map<String, Object> p = new LinkedHashMap<>();
         p.put("section", section);
         p.put("interface_id", interfaceId);
@@ -191,32 +199,49 @@ final class PcapngSummary {
         return ns.add(BigInteger.valueOf(tsoffset).multiply(NS_PER_S));
     }
 
-    private static List<Section.Option> entries(Section.Options options) {
+    /**
+     * An option's typed value (OptionText, OptionU1, ...). {@code o.value()} is the
+     * wrapper for the block's kind of options, which maps the code to that type;
+     * the wrappers share no supertype, so each is unwrapped here.
+     */
+    static Object typed(PcapngOptions.Option o) {
+        Object w = o.value();
+        if (w instanceof PcapngOptions.CommonOptionValue v) return v.value();
+        if (w instanceof PcapngOptions.SectionHeaderOptionValue v) return v.value();
+        if (w instanceof PcapngOptions.InterfaceDescriptionOptionValue v) return v.value();
+        if (w instanceof PcapngOptions.EnhancedPacketOptionValue v) return v.value();
+        if (w instanceof PcapngOptions.PacketOptionValue v) return v.value();
+        if (w instanceof PcapngOptions.NameResolutionOptionValue v) return v.value();
+        if (w instanceof PcapngOptions.InterfaceStatisticsOptionValue v) return v.value();
+        return w;
+    }
+
+    private static List<PcapngOptions.Option> entries(PcapngOptions options) {
         return options != null && options.entries() != null ? options.entries() : List.of();
     }
 
-    private static String firstText(Section.Options options, int code) {
-        for (Section.Option o : entries(options)) {
-            if (o.code() == code) return ((Section.OptionText) o.value()).value();
+    private static String firstText(PcapngOptions options, int code) {
+        for (PcapngOptions.Option o : entries(options)) {
+            if (o.code() == code) return ((PcapngOptions.OptionText) typed(o)).value();
         }
         return null;
     }
 
-    private static List<String> comments(Section.Options options) {
+    private static List<String> comments(PcapngOptions options) {
         List<String> out = new ArrayList<>();
-        for (Section.Option o : entries(options)) {
-            if (o.code() == 1) out.add(((Section.OptionText) o.value()).value());
+        for (PcapngOptions.Option o : entries(options)) {
+            if (o.code() == 1) out.add(((PcapngOptions.OptionText) typed(o)).value());
         }
         return out;
     }
 
     /**
-     * Parse one packet with link_frame and pick out the fields the golden files
+     * Parse one packet with pcapng_link_frame and pick out the fields the golden files
      * hold, plus ether_type_name. An enum field with an unknown value is null in
      * Java, so an unknown ether type comes back as null in both.
      */
     static Map<String, Object> linkFields(int linkType, byte[] data) {
-        LinkFrame frame = new LinkFrame(new ByteBufferKaitaiStream(data), linkType);
+        PcapngLinkFrame frame = new PcapngLinkFrame(new ByteBufferKaitaiStream(data), linkType);
         Map<String, Object> m = new LinkedHashMap<>();
         switch (linkType) {
             case 1 -> {

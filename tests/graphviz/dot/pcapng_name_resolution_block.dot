@@ -1,0 +1,56 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__pcapng_name_resolution_block {
+		label="PcapngNameResolutionBlock";
+		graph[style=dotted];
+
+		pcapng_name_resolution_block__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="records_pos">0</TD><TD PORT="records_size">...</TD><TD>NameRecord</TD><TD PORT="records_type">records</TD></TR>
+			<TR><TD COLSPAN="4" PORT="records__repeat">repeat until _.record_type == 0</TD></TR>
+			<TR><TD PORT="options_pos">...</TD><TD PORT="options_size">...</TD><TD>PcapngOptions</TD><TD PORT="options_type">options</TD></TR>
+		</TABLE>>];
+		subgraph cluster__name_record {
+			label="PcapngNameResolutionBlock::NameRecord";
+			graph[style=dotted];
+
+			name_record__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="record_type_pos">0</TD><TD PORT="record_type_size">2</TD><TD>u2</TD><TD PORT="record_type_type">record_type</TD></TR>
+				<TR><TD PORT="len_value_pos">2</TD><TD PORT="len_value_size">2</TD><TD>u2</TD><TD PORT="len_value_type">len_value</TD></TR>
+				<TR><TD PORT="value_pos">4</TD><TD PORT="value_size">...</TD><TD>switch (record_type)</TD><TD PORT="value_type">value</TD></TR>
+				<TR><TD PORT="padding_pos">...</TD><TD PORT="padding_size">(4 - len_value % 4) % 4</TD><TD></TD><TD PORT="padding_type">padding</TD></TR>
+			</TABLE>>];
+name_record__seq_value_switch [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<TR><TD BGCOLOR="#F0F2E4">case</TD><TD BGCOLOR="#F0F2E4">type</TD></TR>
+	<TR><TD>1</TD><TD PORT="case0">NamedAddress</TD></TR>
+	<TR><TD>2</TD><TD PORT="case1">NamedAddress</TD></TR>
+	<TR><TD>3</TD><TD PORT="case2">NamedAddress</TD></TR>
+	<TR><TD>4</TD><TD PORT="case3">NamedAddress</TD></TR>
+</TABLE>>];
+		}
+		subgraph cluster__named_address {
+			label="PcapngNameResolutionBlock::NamedAddress";
+			graph[style=dotted];
+
+			named_address__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="address_pos">0</TD><TD PORT="address_size">len_address</TD><TD></TD><TD PORT="address_type">address</TD></TR>
+				<TR><TD PORT="names_pos">...</TD><TD PORT="names_size">...</TD><TD>str(term=0, ignore EOS, UTF-8)</TD><TD PORT="names_type">names</TD></TR>
+				<TR><TD COLSPAN="4" PORT="names__repeat">repeat to end of stream</TD></TR>
+			</TABLE>>];
+		}
+	}
+	pcapng_name_resolution_block__seq:records_type -> name_record__seq [style=bold];
+	name_record__seq:record_type_type -> pcapng_name_resolution_block__seq:records__repeat [color="#404040"];
+	pcapng_name_resolution_block__seq:options_type -> pcapng_options__seq [style=bold];
+	name_record__seq:value_type -> name_record__seq_value_switch [style=bold];
+	name_record__seq_value_switch:case0 -> named_address__seq [style=bold];
+	name_record__seq_value_switch:case1 -> named_address__seq [style=bold];
+	name_record__seq_value_switch:case2 -> named_address__seq [style=bold];
+	name_record__seq_value_switch:case3 -> named_address__seq [style=bold];
+	name_record__seq:record_type_type -> name_record__seq:value_type [color="#404040"];
+	name_record__seq:len_value_type -> name_record__seq:padding_size [color="#404040"];
+	named_address__params:len_address_type -> named_address__seq:address_size [color="#404040"];
+}

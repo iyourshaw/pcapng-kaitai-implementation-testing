@@ -8,7 +8,7 @@
 --   bignum and works for any u8 timestamp.
 
 require("pcapng")
-require("link_frame")
+require("pcapng_link_frame")
 local json = require("dkjson")
 local stringstream = require("string_stream")
 
@@ -141,7 +141,7 @@ end
 
 local function first_text(options, code)
   for _, o in ipairs(entries(options)) do
-    if o.code == code then return o.value.value end
+    if o.code == code then return o.value.value.value end
   end
   return null
 end
@@ -149,7 +149,7 @@ end
 local function comments(options)
   local out = array()
   for _, o in ipairs(entries(options)) do
-    if o.code == 1 then out[#out + 1] = o.value.value end
+    if o.code == 1 then out[#out + 1] = o.value.value.value end
   end
   return out
 end
@@ -205,8 +205,8 @@ function M.summarize(parsed)
       if bt == BT.interface_description then
         local tsresol, tsoffset
         for _, o in ipairs(entries(body.options)) do
-          if o.code == 9 and tsresol == nil then tsresol = o.value.value end
-          if o.code == 14 and tsoffset == nil then tsoffset = o.value.value end
+          if o.code == 9 and tsresol == nil then tsresol = o.value.value.value end
+          if o.code == 14 and tsoffset == nil then tsoffset = o.value.value.value end
         end
         local iface = {
           link_type = body.link_type and body.link_type.value or null,
@@ -256,13 +256,13 @@ function M.summarize(parsed)
       elseif bt == BT.interface_statistics then
         local st = { section = si, interface_id = body.interface_id, ts_high = body.ts_high, ts_low = body.ts_low }
         for _, o in ipairs(entries(body.options)) do
-          if (o.code == 2 or o.code == 3) and o.value.ts_high ~= nil then
-            st[o.code == 2 and "starttime" or "endtime"] = array({ o.value.ts_high, o.value.ts_low })
-          elseif ISB_COUNTERS[o.code] and o.value.value ~= nil then
-            st[ISB_COUNTERS[o.code]] = o.value.value
+          if (o.code == 2 or o.code == 3) and o.value.value.ts_high ~= nil then
+            st[o.code == 2 and "starttime" or "endtime"] = array({ o.value.value.ts_high, o.value.value.ts_low })
+          elseif ISB_COUNTERS[o.code] and o.value.value.value ~= nil then
+            st[ISB_COUNTERS[o.code]] = o.value.value.value
           elseif o.code == 1 then
             st.comments = st.comments or array()
-            st.comments[#st.comments + 1] = o.value.value
+            st.comments[#st.comments + 1] = o.value.value.value
           end
         end
         stats[#stats + 1] = st
@@ -286,11 +286,11 @@ function M.summarize(parsed)
   }, packet_data
 end
 
--- Parse one packet with link_frame and pick out the fields the golden files
+-- Parse one packet with pcapng_link_frame and pick out the fields the golden files
 -- hold, plus ether_type_name (nil when the ether type isn't in ether_type_enum;
 -- then ether_type is nil too, since Lua loses an unknown enum's number).
 function M.link_fields(link_type, data)
-  local frame = LinkFrame(link_type, KaitaiStream(stringstream(data)))
+  local frame = PcapngLinkFrame(link_type, KaitaiStream(stringstream(data)))
   local body = frame.body
   if link_type == 1 then
     local et = body.ether_type

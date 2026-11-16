@@ -169,7 +169,7 @@ TEST_P(Sample, LinkFrames) {
         try {
             fields = summary::link_fields(pd.link_type, pd.data);
         } catch (const std::exception& e) {
-            FAIL() << where << ": link_frame failed to parse: " << e.what();
+            FAIL() << where << ": pcapng_link_frame failed to parse: " << e.what();
         }
         if (pd.link_type == 1) {
             // Every ether type in the samples should be named in ethernet_frame's

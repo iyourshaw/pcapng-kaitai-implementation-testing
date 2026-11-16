@@ -9,9 +9,17 @@
 
 #include "ethernet_frame.h"
 #include "ieee802_11.h"
-#include "link_frame.h"
+#include "pcapng_link_frame.h"
 #include "linux_sll.h"
 #include "radiotap.h"
+#include "pcapng_section_header_block.h"
+#include "pcapng_interface_description_block.h"
+#include "pcapng_enhanced_packet_block.h"
+#include "pcapng_simple_packet_block.h"
+#include "pcapng_packet_block.h"
+#include "pcapng_name_resolution_block.h"
+#include "pcapng_interface_statistics_block.h"
+#include "pcapng_options.h"
 
 using nlohmann::json;
 using section_t = pcapng_t::section_t;
@@ -70,25 +78,41 @@ std::string hex(const std::string& bytes) {
     return out;
 }
 
-std::vector<section_t::option_t*> entries(section_t::options_t* options) {
-    std::vector<section_t::option_t*> out;
+// An option's typed value (option_text_t, option_u1_t, ...). o->value() is the
+// wrapper for the block's kind of options, which maps the code to that type;
+// the wrappers share no base type besides kstruct, so each is unwrapped here.
+kaitai::kstruct* typed(pcapng_options_t::option_t* o) {
+    using o_t = pcapng_options_t;
+    kaitai::kstruct* w = o->value();
+    if (auto* v = dynamic_cast<o_t::common_option_value_t*>(w)) return v->value();
+    if (auto* v = dynamic_cast<o_t::section_header_option_value_t*>(w)) return v->value();
+    if (auto* v = dynamic_cast<o_t::interface_description_option_value_t*>(w)) return v->value();
+    if (auto* v = dynamic_cast<o_t::enhanced_packet_option_value_t*>(w)) return v->value();
+    if (auto* v = dynamic_cast<o_t::packet_option_value_t*>(w)) return v->value();
+    if (auto* v = dynamic_cast<o_t::name_resolution_option_value_t*>(w)) return v->value();
+    if (auto* v = dynamic_cast<o_t::interface_statistics_option_value_t*>(w)) return v->value();
+    return nullptr;
+}
+
+std::vector<pcapng_options_t::option_t*> entries(pcapng_options_t* options) {
+    std::vector<pcapng_options_t::option_t*> out;
     if (options && options->entries()) {
         for (auto& o : *options->entries()) out.push_back(o.get());
     }
     return out;
 }
 
-json first_text(section_t::options_t* options, int code) {
+json first_text(pcapng_options_t* options, int code) {
     for (auto* o : entries(options)) {
-        if (o->code() == code) return static_cast<section_t::option_text_t*>(o->value())->value();
+        if (o->code() == code) return static_cast<pcapng_options_t::option_text_t*>(typed(o))->value();
     }
     return nullptr;
 }
 
-json comments(section_t::options_t* options) {
+json comments(pcapng_options_t* options) {
     json out = json::array();
     for (auto* o : entries(options)) {
-        if (o->code() == 1) out.push_back(static_cast<section_t::option_text_t*>(o->value())->value());
+        if (o->code() == 1) out.push_back(static_cast<pcapng_options_t::option_text_t*>(typed(o))->value());
     }
     return out;
 }
@@ -119,7 +143,7 @@ std::string ts_ns(uint64_t ts, int tsresol, int64_t tsoffset) {
 }
 
 json packet(int section, const Iface& iface, long interface_id, long cap_len, long orig_len,
-            uint32_t ts_high, uint32_t ts_low, section_t::options_t* options) {
+            uint32_t ts_high, uint32_t ts_low, pcapng_options_t* options) {
     uint64_t ts = (static_cast<uint64_t>(ts_high) << 32) | ts_low;
     return json{
         {"section", section},
@@ -143,7 +167,7 @@ Result summarize(pcapng_t& parsed) {
     for (size_t si = 0; si < parsed.sections()->size(); si++) {
         auto* sif = parsed.sections()->at(si).get();
         auto* sec = sif->section();
-        auto* shb = static_cast<section_t::section_header_block_t*>(sec->header()->body());
+        auto* shb = static_cast<pcapng_section_header_block_t*>(sec->header()->body());
         const std::string bom = sif->byte_order_magic();
         sections.push_back(json{
             {"endian", bom == std::string(reinterpret_cast<const char*>(kBomLe), 4) ? "le" : "be"},
@@ -166,16 +190,16 @@ Result summarize(pcapng_t& parsed) {
             kaitai::kstruct* body = blk->body();
             switch (blk->block_type()) {
             case pcapng_t::BLOCK_TYPE_INTERFACE_DESCRIPTION: {
-                auto* idb = static_cast<section_t::interface_description_block_t*>(body);
+                auto* idb = static_cast<pcapng_interface_description_block_t*>(body);
                 Iface iface{static_cast<long>(idb->link_type()), idb->snaplen(), 6, 0};
                 bool have_resol = false, have_offset = false;
                 for (auto* o : entries(idb->options())) {
                     if (o->code() == 9 && !have_resol) {
-                        iface.tsresol = static_cast<section_t::option_u1_t*>(o->value())->value();
+                        iface.tsresol = static_cast<pcapng_options_t::option_u1_t*>(typed(o))->value();
                         have_resol = true;
                     }
                     if (o->code() == 14 && !have_offset) {
-                        iface.tsoffset = static_cast<section_t::option_s8_t*>(o->value())->value();
+                        iface.tsoffset = static_cast<pcapng_options_t::option_s8_t*>(typed(o))->value();
                         have_offset = true;
                     }
                 }
@@ -193,7 +217,7 @@ Result summarize(pcapng_t& parsed) {
                 break;
             }
             case pcapng_t::BLOCK_TYPE_ENHANCED_PACKET: {
-                auto* epb = static_cast<section_t::enhanced_packet_block_t*>(body);
+                auto* epb = static_cast<pcapng_enhanced_packet_block_t*>(body);
                 const Iface& iface = ifaces.at(first_iface + epb->interface_id());
                 packets.push_back(packet(si, iface, epb->interface_id(), epb->len_packet_data(),
                                          epb->len_original(), epb->ts_high(), epb->ts_low(), epb->options()));
@@ -201,7 +225,7 @@ Result summarize(pcapng_t& parsed) {
                 break;
             }
             case pcapng_t::BLOCK_TYPE_PACKET: {
-                auto* pb = static_cast<section_t::packet_block_t*>(body);
+                auto* pb = static_cast<pcapng_packet_block_t*>(body);
                 const Iface& iface = ifaces.at(first_iface + pb->interface_id());
                 packets.push_back(packet(si, iface, pb->interface_id(), pb->len_packet_data(),
                                          pb->len_original(), pb->ts_high(), pb->ts_low(), pb->options()));
@@ -209,7 +233,7 @@ Result summarize(pcapng_t& parsed) {
                 break;
             }
             case pcapng_t::BLOCK_TYPE_SIMPLE_PACKET: {
-                auto* spb = static_cast<section_t::simple_packet_block_t*>(body);
+                auto* spb = static_cast<pcapng_simple_packet_block_t*>(body);
                 const Iface& iface = ifaces.at(first_iface);
                 std::string bytes = spb->packet_data_and_padding();
                 size_t cap = std::min<size_t>(spb->len_original(), bytes.size());
@@ -222,7 +246,7 @@ Result summarize(pcapng_t& parsed) {
                 break;
             }
             case pcapng_t::BLOCK_TYPE_NAME_RESOLUTION: {
-                auto* nrb = static_cast<section_t::name_resolution_block_t*>(body);
+                auto* nrb = static_cast<pcapng_name_resolution_block_t*>(body);
                 for (auto& rec : *nrb->records()) {
                     if (rec->record_type() == 0) continue;
                     json r = {{"record_type", rec->record_type()}};
@@ -242,7 +266,7 @@ Result summarize(pcapng_t& parsed) {
                 break;
             }
             case pcapng_t::BLOCK_TYPE_INTERFACE_STATISTICS: {
-                auto* isb = static_cast<section_t::interface_statistics_block_t*>(body);
+                auto* isb = static_cast<pcapng_interface_statistics_block_t*>(body);
                 json st = {
                     {"section", si}, {"interface_id", isb->interface_id()},
                     {"ts_high", isb->ts_high()}, {"ts_low", isb->ts_low()},
@@ -250,15 +274,15 @@ Result summarize(pcapng_t& parsed) {
                 for (auto* o : entries(isb->options())) {
                     auto counter = kIsbCounters.find(o->code());
                     if (o->code() == 2 || o->code() == 3) {
-                        auto* t = dynamic_cast<section_t::option_timestamp_t*>(o->value());
+                        auto* t = dynamic_cast<pcapng_options_t::option_timestamp_t*>(typed(o));
                         if (t && !t->_is_null_ts_high()) {
                             st[o->code() == 2 ? "starttime" : "endtime"] = json::array({t->ts_high(), t->ts_low()});
                         }
                     } else if (counter != kIsbCounters.end()) {
-                        auto* u = dynamic_cast<section_t::option_u8_t*>(o->value());
+                        auto* u = dynamic_cast<pcapng_options_t::option_u8_t*>(typed(o));
                         if (u && !u->_is_null_value()) st[counter->second] = u->value();
                     } else if (o->code() == 1) {
-                        st["comments"].push_back(static_cast<section_t::option_text_t*>(o->value())->value());
+                        st["comments"].push_back(static_cast<pcapng_options_t::option_text_t*>(typed(o))->value());
                     }
                 }
                 stats.push_back(st);
@@ -297,7 +321,7 @@ void wlan(json& m, ieee802_11_t* w) {
 
 json link_fields(int link_type, const std::string& data) {
     kaitai::kstream ks(data);
-    link_frame_t frame(static_cast<uint16_t>(link_type), &ks);
+    pcapng_link_frame_t frame(static_cast<uint16_t>(link_type), &ks);
     json m = json::object();
     switch (link_type) {
     case 1: {

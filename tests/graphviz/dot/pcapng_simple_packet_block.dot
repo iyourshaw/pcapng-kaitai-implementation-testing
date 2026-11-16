@@ -1,0 +1,14 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__pcapng_simple_packet_block {
+		label="PcapngSimplePacketBlock";
+		graph[style=dotted];
+
+		pcapng_simple_packet_block__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="len_original_pos">0</TD><TD PORT="len_original_size">4</TD><TD>u4</TD><TD PORT="len_original_type">len_original</TD></TR>
+			<TR><TD PORT="packet_data_and_padding_pos">4</TD><TD PORT="packet_data_and_padding_size">⇲</TD><TD></TD><TD PORT="packet_data_and_padding_type">packet_data_and_padding</TD></TR>
+		</TABLE>>];
+	}
+}

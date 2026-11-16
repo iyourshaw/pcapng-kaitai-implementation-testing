@@ -25,8 +25,8 @@ BUILD = REPO / "build"
 # carries a patched copy (bff8c65: LE only, more link types) that still has to
 # be reconciled with upstream.
 SPECS = [
-    FORMATS / "network" / "pcapng.ksy",
-    FORMATS / "network" / "link_frame.ksy",
+    FORMATS / "network" / "pcapng" / "pcapng.ksy",
+    FORMATS / "network" / "pcapng" / "pcapng_link_frame.ksy",
     FORMATS / "network" / "pcap.ksy",
 ]
 

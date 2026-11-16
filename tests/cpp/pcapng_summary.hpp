@@ -27,7 +27,7 @@ struct Result {
 
 Result summarize(pcapng_t& parsed);
 
-// Parse one packet with link_frame and pick out the fields the golden files
+// Parse one packet with pcapng_link_frame and pick out the fields the golden files
 // hold, plus ether_type_name (null when the ether type isn't in ether_type_enum).
 nlohmann::json link_fields(int link_type, const std::string& data);
 

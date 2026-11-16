@@ -137,7 +137,7 @@ final class SamplesTest extends TestCase
             try {
                 $fields = PcapngSummary::linkFields($linkType, $bytes);
             } catch (\Throwable $e) {
-                $this->fail("$where: link_frame failed to parse: {$e->getMessage()}");
+                $this->fail("$where: pcapng_link_frame failed to parse: {$e->getMessage()}");
             }
             if ($linkType === 1) {
                 // Every ether type in the samples should be named in ethernet_frame's

@@ -5,7 +5,7 @@ namespace PcapngTests;
 
 use Kaitai\Struct\Stream;
 use PcapngFormats\EthernetFrame;
-use PcapngFormats\LinkFrame;
+use PcapngFormats\PcapngLinkFrame;
 use PcapngFormats\Pcapng;
 use PcapngFormats\Pcapng\BlockType;
 
@@ -58,7 +58,7 @@ final class PcapngSummary
     {
         foreach (self::entries($options) as $o) {
             if ($o->code() === $code) {
-                return $o->value()->value();
+                return $o->value()->value()->value();
             }
         }
         return null;
@@ -70,7 +70,7 @@ final class PcapngSummary
         $out = [];
         foreach (self::entries($options) as $o) {
             if ($o->code() === 1) {
-                $out[] = $o->value()->value();
+                $out[] = $o->value()->value()->value();
             }
         }
         return $out;
@@ -123,8 +123,8 @@ final class PcapngSummary
                     case BlockType::INTERFACE_DESCRIPTION:
                         $tsresol = $tsoffset = null;
                         foreach (self::entries($body->options()) as $o) {
-                            if ($o->code() === 9 && $tsresol === null) $tsresol = $o->value()->value();
-                            if ($o->code() === 14 && $tsoffset === null) $tsoffset = $o->value()->value();
+                            if ($o->code() === 9 && $tsresol === null) $tsresol = $o->value()->value()->value();
+                            if ($o->code() === 14 && $tsoffset === null) $tsoffset = $o->value()->value()->value();
                         }
                         $iface = [
                             'link_type' => $body->linkType(),
@@ -181,12 +181,12 @@ final class PcapngSummary
                                'ts_high' => $body->tsHigh(), 'ts_low' => $body->tsLow()];
                         foreach (self::entries($body->options()) as $o) {
                             $code = $o->code();
-                            if (($code === 2 || $code === 3) && $o->value()->tsHigh() !== null) {
-                                $st[$code === 2 ? 'starttime' : 'endtime'] = [$o->value()->tsHigh(), $o->value()->tsLow()];
-                            } elseif (isset(self::ISB_COUNTERS[$code]) && $o->value()->value() !== null) {
-                                $st[self::ISB_COUNTERS[$code]] = $o->value()->value();
+                            if (($code === 2 || $code === 3) && $o->value()->value()->tsHigh() !== null) {
+                                $st[$code === 2 ? 'starttime' : 'endtime'] = [$o->value()->value()->tsHigh(), $o->value()->value()->tsLow()];
+                            } elseif (isset(self::ISB_COUNTERS[$code]) && $o->value()->value()->value() !== null) {
+                                $st[self::ISB_COUNTERS[$code]] = $o->value()->value()->value();
                             } elseif ($code === 1) {
-                                $st['comments'][] = $o->value()->value();
+                                $st['comments'][] = $o->value()->value()->value();
                             }
                         }
                         $stats[] = $st;
@@ -211,12 +211,12 @@ final class PcapngSummary
     }
 
     /**
-     * Parse one packet with link_frame and pick out the fields the golden files
+     * Parse one packet with pcapng_link_frame and pick out the fields the golden files
      * hold, plus ether_type_name (null when the ether type isn't in ether_type_enum).
      */
     public static function linkFields(int $linkType, string $data): array
     {
-        $frame = new LinkFrame($linkType, new Stream($data));
+        $frame = new PcapngLinkFrame($linkType, new Stream($data));
         $body = $frame->body();
         return match ($linkType) {
             1 => [

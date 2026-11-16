@@ -97,7 +97,7 @@ class SamplesTest < Minitest::Test
         begin
           fields = PcapngSummary.link_fields(link_type, bytes)
         rescue StandardError => e
-          flunk "#{where}: link_frame failed to parse: #{e.class}: #{e.message}"
+          flunk "#{where}: pcapng_link_frame failed to parse: #{e.class}: #{e.message}"
         end
         if link_type == 1
           # Every ether type in the samples should be named in ethernet_frame's

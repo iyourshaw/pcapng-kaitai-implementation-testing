@@ -8,9 +8,16 @@ Includes scripts to compile the pcapng implementation to every language supporte
 synthetic sample pcapng files, and decode test projects for Java, Python, JavaScript, C#, C++, Lua,
 PHP and Ruby.
 
-Tests for `network/pcapng.ksy` and `network/link_frame.ksy` (with `linux_sll`, `ieee802_11`
-and `radiotap`). The specs themselves
-are in the `kaitai_struct_formats` submodule, which tracks the `pcapng` branch of the fork.
+Tests for the pcapng spec in `network/pcapng/`, with the link layers it decodes packets with
+(`linux_sll`, `ieee802_11` and `radiotap`). The specs themselves are in the `kaitai_struct_formats`
+submodule, which tracks the `pcapng` branch of the fork.
+
+The pcapng spec is split into one file per block type: `pcapng.ksy` holds the sections and the
+block framing, `pcapng_<block>.ksy` the body of each block type, and `pcapng_options.ksy` the
+options that end most blocks. `pcapng_link_frame.ksy` parses a packet's data by its interface's
+link type, which `pcapng` itself can't look up. Each block file takes the section's byte order as the parameter
+`is_le`, since a type in another file can't inherit it. [`tests/graphviz/`](tests/graphviz/README.md)
+shows how the pieces fit, with a diagram of each.
 
 ## Prerequisites
 
@@ -76,7 +83,7 @@ A ksc target gets a test project only if it rates at least 65% on
 Layer 1 still checks that ksc accepts the specs for all of these:
 - **Go** and **Nim**: kaitai.io lists them as "entry-level support".
 - **Perl** (61% on ci.kaitai.io): ksc 0.11's Perl backend drops every `params:` argument, so
-  pcapng's options, name records and `link_frame` don't decode.
+  pcapng's options, name records and `pcapng_link_frame` don't decode.
 - **Rust** (70%): ksc 0.11's Rust output for these specs doesn't compile. Under calculated
   endianness it reads `enum:` fields with methods that don't exist, and it never passes the
   byte order to types that take params. It also mistypes a `switch-on` over an instance, and
@@ -102,16 +109,19 @@ The C# and Lua build checks found four naming problems, fixed in the fork (d5003
   ternary that mixes a conditional (nullable) field with integers.
 - `pcapng`: the `name_record_type` value `end` is now `end_of_records`. `end` is a Lua keyword,
   and ksc doesn't escape it.
+- `pcapng_decryption_secrets_block` (after the split): the enum `secrets_type` is
+  `secrets_type_enum`. Once the field and the enum were in the same type, C# gave both the name
+  `SecretsType` (CS0102).
 - `tcp_segment` (upstream, unchanged until now): the type `flags` is now `tcp_flags`, for the same
   C# reason.
 
 ## Diagrams
 
 `ksc -t graphviz` draws each spec as a diagram, and [`tests/graphviz/`](tests/graphviz/README.md)
-holds them for all 14 specs as `.dot` and SVG. That page also lists what ksc's graphviz output
-gets wrong and how it could be improved. For example, `link_frame`:
+holds them for all 24 specs as `.dot` and SVG. That page also lists what ksc's graphviz output
+gets wrong and how it could be improved. For example, `pcapng_link_frame`:
 
-![link_frame](tests/graphviz/svg/link_frame.svg)
+![pcapng_link_frame](tests/graphviz/svg/pcapng_link_frame.svg)
 
 ## CI
 
@@ -150,7 +160,7 @@ Each language compares, per sample:
 - sections, the block-type sequence and interfaces
 - packets: interface, lengths, nanosecond timestamps (from `if_tsresol` and `if_tsoffset`) and comments
 - name records and interface statistics
-- each packet parsed with `link_frame`: Ethernet or SLL protocol, 802.11 type and subtype, radiotap length
+- each packet parsed with `pcapng_link_frame`: Ethernet or SLL protocol, 802.11 type and subtype, radiotap length
 
 ## License
 
@@ -158,8 +168,8 @@ Copyright 2026 Neaera Consulting LLC. Licensed under the [Apache License, Versio
 See [NOTICE](NOTICE) for attributions.
 
 The `kaitai_struct_formats` submodule isn't covered by this license. As in upstream, each `.ksy` there
-is licensed on its own (`meta/license`). The specs these tests use are either Apache-2.0 (`pcapng`,
-`link_frame`, `linux_sll`, `ieee802_11`, `radiotap`) or CC0-1.0 (`pcap`, `ethernet_frame` and the
+is licensed on its own (`meta/license`). The specs these tests use are either Apache-2.0 (the 12
+`pcapng*` files, `linux_sll`, `ieee802_11`, `radiotap`) or CC0-1.0 (`pcap`, `ethernet_frame` and the
 other imported network specs), and both work with Apache-2.0. The generated decoders keep the
 license of the spec they come from, and aren't committed. The Graphviz diagrams in `tests/graphviz/`
 are committed, and they too keep the license of the spec they're drawn from. The Kaitai Struct

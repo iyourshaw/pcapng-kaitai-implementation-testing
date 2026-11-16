@@ -7,7 +7,7 @@ const KaitaiStream = require('kaitai-struct/KaitaiStream');
 
 const GENERATED = path.join(__dirname, 'generated');
 const { Pcapng } = require(path.join(GENERATED, 'Pcapng.js'));
-const { LinkFrame } = require(path.join(GENERATED, 'LinkFrame.js'));
+const { PcapngLinkFrame } = require(path.join(GENERATED, 'PcapngLinkFrame.js'));
 const { EthernetFrame } = require(path.join(GENERATED, 'EthernetFrame.js'));
 
 const BT = Pcapng.BlockType;
@@ -24,7 +24,10 @@ function blockTypeName(value) {
 }
 
 const entries = (options) => (options && options.entries) || [];
-const optionValues = (options, code) => entries(options).filter((o) => o.code === code).map((o) => o.value);
+// An option's typed value (OptionText, OptionU1, ...). `o.value` is the
+// per-block-kind wrapper that maps the code to that type.
+const typed = (o) => o.value.value;
+const optionValues = (options, code) => entries(options).filter((o) => o.code === code).map(typed);
 
 function firstText(options, code) {
   const values = optionValues(options, code);
@@ -135,12 +138,13 @@ function summarize(parsed) {
         case BT.INTERFACE_STATISTICS: {
           const st = { section: si, interface_id: body.interfaceId, ts_high: body.tsHigh, ts_low: body.tsLow };
           for (const o of entries(body.options)) {
-            if ((o.code === 2 || o.code === 3) && opt(o.value.tsHigh) !== null) {
-              st[o.code === 2 ? 'starttime' : 'endtime'] = [o.value.tsHigh, o.value.tsLow];
-            } else if (ISB_COUNTERS[o.code] && opt(o.value.value) !== null) {
-              st[ISB_COUNTERS[o.code]] = o.value.value;
+            const v = typed(o);
+            if ((o.code === 2 || o.code === 3) && opt(v.tsHigh) !== null) {
+              st[o.code === 2 ? 'starttime' : 'endtime'] = [v.tsHigh, v.tsLow];
+            } else if (ISB_COUNTERS[o.code] && opt(v.value) !== null) {
+              st[ISB_COUNTERS[o.code]] = v.value;
             } else if (o.code === 1) {
-              (st.comments = st.comments || []).push(o.value.value);
+              (st.comments = st.comments || []).push(v.value);
             }
           }
           stats.push(st);
@@ -160,9 +164,9 @@ function summarize(parsed) {
   };
 }
 
-/** Parse one packet with link_frame and pick out the fields the golden files hold. */
+/** Parse one packet with pcapng_link_frame and pick out the fields the golden files hold. */
 function linkFields(linkType, data) {
-  const frame = new LinkFrame(new KaitaiStream(data), null, null, linkType);
+  const frame = new PcapngLinkFrame(new KaitaiStream(data), null, null, linkType);
   const body = frame.body;
   switch (linkType) {
     case 1: {

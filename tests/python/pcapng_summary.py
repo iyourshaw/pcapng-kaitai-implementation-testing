@@ -10,7 +10,7 @@ from enum import Enum
 
 from kaitaistruct import BytesIO, KaitaiStream
 
-from link_frame import LinkFrame
+from pcapng_link_frame import PcapngLinkFrame
 from pcapng import Pcapng
 
 BOM_LE = b"\x4d\x3c\x2b\x1a"
@@ -45,8 +45,14 @@ def entries(options) -> list:
     return list(opt(options, "entries") or []) if options is not None else []
 
 
+def typed(o):
+    """An option's typed value (option_text, option_u1, ...). `o.value` is the
+    per-block-kind wrapper that maps the code to that type."""
+    return o.value.value
+
+
 def option_values(options, code: int) -> list:
-    return [o.value for o in entries(options) if o.code == code]
+    return [typed(o) for o in entries(options) if o.code == code]
 
 
 def first_text(options, code: int):
@@ -149,12 +155,13 @@ def summarize(parsed: Pcapng) -> dict:
                 st = {"section": si, "interface_id": body.interface_id,
                       "ts_high": body.ts_high, "ts_low": body.ts_low}
                 for o in entries(body.options):
-                    if o.code in (2, 3) and opt(o.value, "ts_high") is not None:
-                        st["starttime" if o.code == 2 else "endtime"] = [o.value.ts_high, o.value.ts_low]
-                    elif o.code in ISB_COUNTERS and opt(o.value, "value") is not None:
-                        st[ISB_COUNTERS[o.code]] = o.value.value
+                    v = typed(o)
+                    if o.code in (2, 3) and opt(v, "ts_high") is not None:
+                        st["starttime" if o.code == 2 else "endtime"] = [v.ts_high, v.ts_low]
+                    elif o.code in ISB_COUNTERS and opt(v, "value") is not None:
+                        st[ISB_COUNTERS[o.code]] = v.value
                     elif o.code == 1:
-                        st.setdefault("comments", []).append(o.value.value)
+                        st.setdefault("comments", []).append(v.value)
                 stats.append(st)
 
     return {
@@ -169,8 +176,8 @@ ISB_COUNTERS = {4: "ifrecv", 5: "ifdrop", 6: "filteraccept", 7: "osdrop", 8: "us
 
 
 def link_fields(link_type: int, data: bytes) -> dict:
-    """Parse one packet with link_frame and pick out the fields the golden files hold."""
-    frame = LinkFrame(link_type, KaitaiStream(BytesIO(data)))
+    """Parse one packet with pcapng_link_frame and pick out the fields the golden files hold."""
+    frame = PcapngLinkFrame(link_type, KaitaiStream(BytesIO(data)))
     body = frame.body
     if link_type == 1:
         et = body.ether_type

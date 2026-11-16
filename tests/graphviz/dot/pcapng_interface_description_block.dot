@@ -1,0 +1,17 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__pcapng_interface_description_block {
+		label="PcapngInterfaceDescriptionBlock";
+		graph[style=dotted];
+
+		pcapng_interface_description_block__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="link_type_pos">0</TD><TD PORT="link_type_size">2</TD><TD>u2→Pcap::Linktype</TD><TD PORT="link_type_type">link_type</TD></TR>
+			<TR><TD PORT="reserved_pos">2</TD><TD PORT="reserved_size">2</TD><TD></TD><TD PORT="reserved_type">reserved</TD></TR>
+			<TR><TD PORT="snaplen_pos">4</TD><TD PORT="snaplen_size">4</TD><TD>u4</TD><TD PORT="snaplen_type">snaplen</TD></TR>
+			<TR><TD PORT="options_pos">8</TD><TD PORT="options_size">...</TD><TD>PcapngOptions</TD><TD PORT="options_type">options</TD></TR>
+		</TABLE>>];
+	}
+	pcapng_interface_description_block__seq:options_type -> pcapng_options__seq [style=bold];
+}
