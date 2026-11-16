@@ -1,0 +1,118 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__ieee802_11 {
+		label="Ieee80211";
+		graph[style=dotted];
+
+		ieee802_11__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="protocol_version_pos">0</TD><TD PORT="protocol_version_size">2b</TD><TD>b2le</TD><TD PORT="protocol_version_type">protocol_version</TD></TR>
+			<TR><TD PORT="frame_type_pos">0:2</TD><TD PORT="frame_type_size">2b</TD><TD>b2le→FrameTypeEnum</TD><TD PORT="frame_type_type">frame_type</TD></TR>
+			<TR><TD PORT="subtype_pos">0:4</TD><TD PORT="subtype_size">4b</TD><TD>b4le</TD><TD PORT="subtype_type">subtype</TD></TR>
+			<TR><TD PORT="to_ds_pos">1</TD><TD PORT="to_ds_size">1b</TD><TD>b1le→bool</TD><TD PORT="to_ds_type">to_ds</TD></TR>
+			<TR><TD PORT="from_ds_pos">1:1</TD><TD PORT="from_ds_size">1b</TD><TD>b1le→bool</TD><TD PORT="from_ds_type">from_ds</TD></TR>
+			<TR><TD PORT="more_fragments_pos">1:2</TD><TD PORT="more_fragments_size">1b</TD><TD>b1le→bool</TD><TD PORT="more_fragments_type">more_fragments</TD></TR>
+			<TR><TD PORT="retry_pos">1:3</TD><TD PORT="retry_size">1b</TD><TD>b1le→bool</TD><TD PORT="retry_type">retry</TD></TR>
+			<TR><TD PORT="power_management_pos">1:4</TD><TD PORT="power_management_size">1b</TD><TD>b1le→bool</TD><TD PORT="power_management_type">power_management</TD></TR>
+			<TR><TD PORT="more_data_pos">1:5</TD><TD PORT="more_data_size">1b</TD><TD>b1le→bool</TD><TD PORT="more_data_type">more_data</TD></TR>
+			<TR><TD PORT="is_protected_pos">1:6</TD><TD PORT="is_protected_size">1b</TD><TD>b1le→bool</TD><TD PORT="is_protected_type">is_protected</TD></TR>
+			<TR><TD PORT="order_pos">1:7</TD><TD PORT="order_size">1b</TD><TD>b1le→bool</TD><TD PORT="order_type">order</TD></TR>
+			<TR><TD PORT="duration_pos">2</TD><TD PORT="duration_size">2</TD><TD>u2le</TD><TD PORT="duration_type">duration</TD></TR>
+			<TR><TD PORT="addr1_pos">4</TD><TD PORT="addr1_size">6</TD><TD></TD><TD PORT="addr1_type">addr1</TD></TR>
+			<TR><TD PORT="addr2_pos">10</TD><TD PORT="addr2_size">6</TD><TD></TD><TD PORT="addr2_type">addr2</TD></TR>
+			<TR><TD COLSPAN="4" PORT="addr2__if">if frame_type != :frame_type_enum_control</TD></TR>
+			<TR><TD PORT="addr3_pos">16</TD><TD PORT="addr3_size">6</TD><TD></TD><TD PORT="addr3_type">addr3</TD></TR>
+			<TR><TD COLSPAN="4" PORT="addr3__if">if frame_type != :frame_type_enum_control</TD></TR>
+			<TR><TD PORT="sequence_control_pos">22</TD><TD PORT="sequence_control_size">2</TD><TD>u2le</TD><TD PORT="sequence_control_type">sequence_control</TD></TR>
+			<TR><TD COLSPAN="4" PORT="sequence_control__if">if frame_type != :frame_type_enum_control</TD></TR>
+			<TR><TD PORT="addr4_pos">24</TD><TD PORT="addr4_size">6</TD><TD></TD><TD PORT="addr4_type">addr4</TD></TR>
+			<TR><TD COLSPAN="4" PORT="addr4__if">if  ((frame_type == :frame_type_enum_data) &amp;&amp; (to_ds) &amp;&amp; (from_ds)) </TD></TR>
+			<TR><TD PORT="qos_control_pos">30</TD><TD PORT="qos_control_size">2</TD><TD>u2le</TD><TD PORT="qos_control_type">qos_control</TD></TR>
+			<TR><TD COLSPAN="4" PORT="qos_control__if">if is_qos</TD></TR>
+			<TR><TD PORT="ht_control_pos">32</TD><TD PORT="ht_control_size">4</TD><TD>u4le</TD><TD PORT="ht_control_type">ht_control</TD></TR>
+			<TR><TD COLSPAN="4" PORT="ht_control__if">if  ((order) &amp;&amp; ( ((is_qos) || (frame_type == :frame_type_enum_management)) )) </TD></TR>
+			<TR><TD PORT="llc_pos">36</TD><TD PORT="llc_size">(_io.size - _io.pos) - (has_fcs ? 4 : 0)</TD><TD>LlcHeader</TD><TD PORT="llc_type">llc</TD></TR>
+			<TR><TD COLSPAN="4" PORT="llc__if">if has_llc</TD></TR>
+			<TR><TD PORT="body_pos">...</TD><TD PORT="body_size">(_io.size - _io.pos) - (has_fcs ? 4 : 0)</TD><TD></TD><TD PORT="body_type">body</TD></TR>
+			<TR><TD COLSPAN="4" PORT="body__if">if !(has_llc)</TD></TR>
+			<TR><TD PORT="fcs_pos">...</TD><TD PORT="fcs_size">4</TD><TD>u4le</TD><TD PORT="fcs_type">fcs</TD></TR>
+			<TR><TD COLSPAN="4" PORT="fcs__if">if has_fcs</TD></TR>
+		</TABLE>>];
+		ieee802_11__inst__has_llc [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+			<TR><TD>has_llc</TD><TD> ((frame_type == :frame_type_enum_data) &amp;&amp; (subtype &amp; 4 == 0) &amp;&amp; (!(is_protected))) </TD></TR>
+		</TABLE>>];
+		ieee802_11__inst__is_qos [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+			<TR><TD>is_qos</TD><TD> ((frame_type == :frame_type_enum_data) &amp;&amp; (subtype &amp; 8 != 0)) </TD></TR>
+		</TABLE>>];
+		subgraph cluster__llc_header {
+			label="Ieee80211::LlcHeader";
+			graph[style=dotted];
+
+			llc_header__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="first_pos">0</TD><TD PORT="first_size">2</TD><TD>u2be</TD><TD PORT="first_type">first</TD></TR>
+				<TR><TD PORT="snap_control_pos">2</TD><TD PORT="snap_control_size">1</TD><TD>u1</TD><TD PORT="snap_control_type">snap_control</TD></TR>
+				<TR><TD COLSPAN="4" PORT="snap_control__if">if is_snap</TD></TR>
+				<TR><TD PORT="snap_oui_pos">3</TD><TD PORT="snap_oui_size">3</TD><TD></TD><TD PORT="snap_oui_type">snap_oui</TD></TR>
+				<TR><TD COLSPAN="4" PORT="snap_oui__if">if is_snap</TD></TR>
+				<TR><TD PORT="snap_ether_type_pos">6</TD><TD PORT="snap_ether_type_size">2</TD><TD>u2be</TD><TD PORT="snap_ether_type_type">snap_ether_type</TD></TR>
+				<TR><TD COLSPAN="4" PORT="snap_ether_type__if">if is_snap</TD></TR>
+				<TR><TD PORT="body_pos">8</TD><TD PORT="body_size">...</TD><TD>switch (ether_type)</TD><TD PORT="body_type">body</TD></TR>
+			</TABLE>>];
+			llc_header__inst__ether_type [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>ether_type</TD><TD>(is_snap ? snap_ether_type : (is_epd ? first : 0))</TD></TR>
+			</TABLE>>];
+			llc_header__inst__is_epd [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>is_epd</TD><TD>first == 35036</TD></TR>
+			</TABLE>>];
+			llc_header__inst__is_snap [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>is_snap</TD><TD>first == 43690</TD></TR>
+			</TABLE>>];
+llc_header__seq_body_switch [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<TR><TD BGCOLOR="#F0F2E4">case</TD><TD BGCOLOR="#F0F2E4">type</TD></TR>
+	<TR><TD>2048</TD><TD PORT="case0">Ipv4Packet</TD></TR>
+	<TR><TD>34525</TD><TD PORT="case1">Ipv6Packet</TD></TR>
+</TABLE>>];
+		}
+	}
+	ieee802_11__seq:frame_type_type -> ieee802_11__seq:addr2__if [color="#404040"];
+	ieee802_11__seq:frame_type_type -> ieee802_11__seq:addr3__if [color="#404040"];
+	ieee802_11__seq:frame_type_type -> ieee802_11__seq:sequence_control__if [color="#404040"];
+	ieee802_11__seq:frame_type_type -> ieee802_11__seq:addr4__if [color="#404040"];
+	ieee802_11__seq:to_ds_type -> ieee802_11__seq:addr4__if [color="#404040"];
+	ieee802_11__seq:from_ds_type -> ieee802_11__seq:addr4__if [color="#404040"];
+	ieee802_11__inst__is_qos:is_qos_type -> ieee802_11__seq:qos_control__if [color="#404040"];
+	ieee802_11__seq:order_type -> ieee802_11__seq:ht_control__if [color="#404040"];
+	ieee802_11__inst__is_qos:is_qos_type -> ieee802_11__seq:ht_control__if [color="#404040"];
+	ieee802_11__seq:frame_type_type -> ieee802_11__seq:ht_control__if [color="#404040"];
+	ieee802_11__params:has_fcs_type -> ieee802_11__seq:llc_size [color="#404040"];
+	ieee802_11__seq:llc_type -> llc_header__seq [style=bold];
+	ieee802_11__inst__has_llc:has_llc_type -> ieee802_11__seq:llc__if [color="#404040"];
+	ieee802_11__params:has_fcs_type -> ieee802_11__seq:body_size [color="#404040"];
+	ieee802_11__inst__has_llc:has_llc_type -> ieee802_11__seq:body__if [color="#404040"];
+	ieee802_11__params:has_fcs_type -> ieee802_11__seq:fcs__if [color="#404040"];
+	ieee802_11__seq:frame_type_type -> ieee802_11__inst__has_llc [color="#404040"];
+	ieee802_11__seq:subtype_type -> ieee802_11__inst__has_llc [color="#404040"];
+	ieee802_11__seq:is_protected_type -> ieee802_11__inst__has_llc [color="#404040"];
+	ieee802_11__seq:frame_type_type -> ieee802_11__inst__is_qos [color="#404040"];
+	ieee802_11__seq:subtype_type -> ieee802_11__inst__is_qos [color="#404040"];
+	llc_header__inst__is_snap:is_snap_type -> llc_header__seq:snap_control__if [color="#404040"];
+	llc_header__inst__is_snap:is_snap_type -> llc_header__seq:snap_oui__if [color="#404040"];
+	llc_header__inst__is_snap:is_snap_type -> llc_header__seq:snap_ether_type__if [color="#404040"];
+	llc_header__seq:body_type -> llc_header__seq_body_switch [style=bold];
+	llc_header__seq_body_switch:case0 -> ipv4_packet__seq [style=bold];
+	llc_header__seq_body_switch:case1 -> ipv6_packet__seq [style=bold];
+	llc_header__inst__ether_type:ether_type_type -> llc_header__seq:body_type [color="#404040"];
+	llc_header__inst__is_snap:is_snap_type -> llc_header__inst__ether_type [color="#404040"];
+	llc_header__seq:snap_ether_type_type -> llc_header__inst__ether_type [color="#404040"];
+	llc_header__inst__is_epd:is_epd_type -> llc_header__inst__ether_type [color="#404040"];
+	llc_header__seq:first_type -> llc_header__inst__ether_type [color="#404040"];
+	llc_header__seq:first_type -> llc_header__inst__is_epd [color="#404040"];
+	llc_header__seq:first_type -> llc_header__inst__is_snap [color="#404040"];
+}

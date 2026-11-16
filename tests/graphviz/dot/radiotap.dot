@@ -1,0 +1,210 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__radiotap {
+		label="Radiotap";
+		graph[style=dotted];
+
+		radiotap__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="version_pos">0</TD><TD PORT="version_size">1</TD><TD>u1</TD><TD PORT="version_type">version</TD></TR>
+			<TR><TD PORT="pad_pos">1</TD><TD PORT="pad_size">1</TD><TD>u1</TD><TD PORT="pad_type">pad</TD></TR>
+			<TR><TD PORT="length_pos">2</TD><TD PORT="length_size">2</TD><TD>u2le</TD><TD PORT="length_type">length</TD></TR>
+			<TR><TD PORT="present_pos">4</TD><TD PORT="present_size">4</TD><TD>u4le</TD><TD PORT="present_type">present</TD></TR>
+			<TR><TD PORT="present_more_pos">8</TD><TD PORT="present_more_size">4</TD><TD>u4le</TD><TD PORT="present_more_type">present_more</TD></TR>
+			<TR><TD COLSPAN="4" PORT="present_more__repeat">repeat until _ &amp; 2147483648 == 0</TD></TR>
+			<TR><TD COLSPAN="4" PORT="present_more__if">if present &amp; 2147483648 != 0</TD></TR>
+			<TR><TD PORT="pad_tsft_pos">...</TD><TD PORT="pad_tsft_size">(8 - _io.pos % 8) % 8</TD><TD></TD><TD PORT="pad_tsft_type">pad_tsft</TD></TR>
+			<TR><TD COLSPAN="4" PORT="pad_tsft__if">if  ((present &amp; 1 != 0) &amp;&amp; (((_io.pos + 7) / 8) * 8 + 8 &lt;= length)) </TD></TR>
+			<TR><TD PORT="tsft_pos">...</TD><TD PORT="tsft_size">8</TD><TD>u8le</TD><TD PORT="tsft_type">tsft</TD></TR>
+			<TR><TD COLSPAN="4" PORT="tsft__if">if  ((present &amp; 1 != 0) &amp;&amp; (((_io.pos + 7) / 8) * 8 + 8 &lt;= length)) </TD></TR>
+			<TR><TD PORT="flags_pos">...</TD><TD PORT="flags_size">1</TD><TD>u1</TD><TD PORT="flags_type">flags</TD></TR>
+			<TR><TD COLSPAN="4" PORT="flags__if">if  ((present &amp; 2 != 0) &amp;&amp; (_io.pos + 1 &lt;= length)) </TD></TR>
+			<TR><TD PORT="rate_pos">...</TD><TD PORT="rate_size">1</TD><TD>u1</TD><TD PORT="rate_type">rate</TD></TR>
+			<TR><TD COLSPAN="4" PORT="rate__if">if  ((present &amp; 4 != 0) &amp;&amp; (_io.pos + 1 &lt;= length)) </TD></TR>
+			<TR><TD PORT="pad_channel_pos">...</TD><TD PORT="pad_channel_size">(2 - _io.pos % 2) % 2</TD><TD></TD><TD PORT="pad_channel_type">pad_channel</TD></TR>
+			<TR><TD COLSPAN="4" PORT="pad_channel__if">if  ((present &amp; 8 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 4 &lt;= length)) </TD></TR>
+			<TR><TD PORT="channel_freq_pos">...</TD><TD PORT="channel_freq_size">2</TD><TD>u2le</TD><TD PORT="channel_freq_type">channel_freq</TD></TR>
+			<TR><TD COLSPAN="4" PORT="channel_freq__if">if  ((present &amp; 8 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 4 &lt;= length)) </TD></TR>
+			<TR><TD PORT="channel_flags_pos">...</TD><TD PORT="channel_flags_size">2</TD><TD>u2le</TD><TD PORT="channel_flags_type">channel_flags</TD></TR>
+			<TR><TD COLSPAN="4" PORT="channel_flags__if">if  ((present &amp; 8 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 2 &lt;= length)) </TD></TR>
+			<TR><TD PORT="pad_fhss_pos">...</TD><TD PORT="pad_fhss_size">(2 - _io.pos % 2) % 2</TD><TD></TD><TD PORT="pad_fhss_type">pad_fhss</TD></TR>
+			<TR><TD COLSPAN="4" PORT="pad_fhss__if">if  ((present &amp; 16 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 2 &lt;= length)) </TD></TR>
+			<TR><TD PORT="fhss_pos">...</TD><TD PORT="fhss_size">2</TD><TD></TD><TD PORT="fhss_type">fhss</TD></TR>
+			<TR><TD COLSPAN="4" PORT="fhss__if">if  ((present &amp; 16 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 2 &lt;= length)) </TD></TR>
+			<TR><TD PORT="dbm_antenna_signal_pos">...</TD><TD PORT="dbm_antenna_signal_size">1</TD><TD>s1</TD><TD PORT="dbm_antenna_signal_type">dbm_antenna_signal</TD></TR>
+			<TR><TD COLSPAN="4" PORT="dbm_antenna_signal__if">if  ((present &amp; 32 != 0) &amp;&amp; (_io.pos + 1 &lt;= length)) </TD></TR>
+			<TR><TD PORT="dbm_antenna_noise_pos">...</TD><TD PORT="dbm_antenna_noise_size">1</TD><TD>s1</TD><TD PORT="dbm_antenna_noise_type">dbm_antenna_noise</TD></TR>
+			<TR><TD COLSPAN="4" PORT="dbm_antenna_noise__if">if  ((present &amp; 64 != 0) &amp;&amp; (_io.pos + 1 &lt;= length)) </TD></TR>
+			<TR><TD PORT="pad_lock_quality_pos">...</TD><TD PORT="pad_lock_quality_size">(2 - _io.pos % 2) % 2</TD><TD></TD><TD PORT="pad_lock_quality_type">pad_lock_quality</TD></TR>
+			<TR><TD COLSPAN="4" PORT="pad_lock_quality__if">if  ((present &amp; 128 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 2 &lt;= length)) </TD></TR>
+			<TR><TD PORT="lock_quality_pos">...</TD><TD PORT="lock_quality_size">2</TD><TD>u2le</TD><TD PORT="lock_quality_type">lock_quality</TD></TR>
+			<TR><TD COLSPAN="4" PORT="lock_quality__if">if  ((present &amp; 128 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 2 &lt;= length)) </TD></TR>
+			<TR><TD PORT="pad_tx_attenuation_pos">...</TD><TD PORT="pad_tx_attenuation_size">(2 - _io.pos % 2) % 2</TD><TD></TD><TD PORT="pad_tx_attenuation_type">pad_tx_attenuation</TD></TR>
+			<TR><TD COLSPAN="4" PORT="pad_tx_attenuation__if">if  ((present &amp; 256 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 2 &lt;= length)) </TD></TR>
+			<TR><TD PORT="tx_attenuation_pos">...</TD><TD PORT="tx_attenuation_size">2</TD><TD>u2le</TD><TD PORT="tx_attenuation_type">tx_attenuation</TD></TR>
+			<TR><TD COLSPAN="4" PORT="tx_attenuation__if">if  ((present &amp; 256 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 2 &lt;= length)) </TD></TR>
+			<TR><TD PORT="pad_db_tx_attenuation_pos">...</TD><TD PORT="pad_db_tx_attenuation_size">(2 - _io.pos % 2) % 2</TD><TD></TD><TD PORT="pad_db_tx_attenuation_type">pad_db_tx_attenuation</TD></TR>
+			<TR><TD COLSPAN="4" PORT="pad_db_tx_attenuation__if">if  ((present &amp; 512 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 2 &lt;= length)) </TD></TR>
+			<TR><TD PORT="db_tx_attenuation_pos">...</TD><TD PORT="db_tx_attenuation_size">2</TD><TD>u2le</TD><TD PORT="db_tx_attenuation_type">db_tx_attenuation</TD></TR>
+			<TR><TD COLSPAN="4" PORT="db_tx_attenuation__if">if  ((present &amp; 512 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 2 &lt;= length)) </TD></TR>
+			<TR><TD PORT="dbm_tx_power_pos">...</TD><TD PORT="dbm_tx_power_size">1</TD><TD>s1</TD><TD PORT="dbm_tx_power_type">dbm_tx_power</TD></TR>
+			<TR><TD COLSPAN="4" PORT="dbm_tx_power__if">if  ((present &amp; 1024 != 0) &amp;&amp; (_io.pos + 1 &lt;= length)) </TD></TR>
+			<TR><TD PORT="antenna_pos">...</TD><TD PORT="antenna_size">1</TD><TD>u1</TD><TD PORT="antenna_type">antenna</TD></TR>
+			<TR><TD COLSPAN="4" PORT="antenna__if">if  ((present &amp; 2048 != 0) &amp;&amp; (_io.pos + 1 &lt;= length)) </TD></TR>
+			<TR><TD PORT="db_antenna_signal_pos">...</TD><TD PORT="db_antenna_signal_size">1</TD><TD>u1</TD><TD PORT="db_antenna_signal_type">db_antenna_signal</TD></TR>
+			<TR><TD COLSPAN="4" PORT="db_antenna_signal__if">if  ((present &amp; 4096 != 0) &amp;&amp; (_io.pos + 1 &lt;= length)) </TD></TR>
+			<TR><TD PORT="db_antenna_noise_pos">...</TD><TD PORT="db_antenna_noise_size">1</TD><TD>u1</TD><TD PORT="db_antenna_noise_type">db_antenna_noise</TD></TR>
+			<TR><TD COLSPAN="4" PORT="db_antenna_noise__if">if  ((present &amp; 8192 != 0) &amp;&amp; (_io.pos + 1 &lt;= length)) </TD></TR>
+			<TR><TD PORT="pad_rx_flags_pos">...</TD><TD PORT="pad_rx_flags_size">(2 - _io.pos % 2) % 2</TD><TD></TD><TD PORT="pad_rx_flags_type">pad_rx_flags</TD></TR>
+			<TR><TD COLSPAN="4" PORT="pad_rx_flags__if">if  ((present &amp; 16384 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 2 &lt;= length)) </TD></TR>
+			<TR><TD PORT="rx_flags_pos">...</TD><TD PORT="rx_flags_size">2</TD><TD>u2le</TD><TD PORT="rx_flags_type">rx_flags</TD></TR>
+			<TR><TD COLSPAN="4" PORT="rx_flags__if">if  ((present &amp; 16384 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 2 &lt;= length)) </TD></TR>
+			<TR><TD PORT="pad_tx_flags_pos">...</TD><TD PORT="pad_tx_flags_size">(2 - _io.pos % 2) % 2</TD><TD></TD><TD PORT="pad_tx_flags_type">pad_tx_flags</TD></TR>
+			<TR><TD COLSPAN="4" PORT="pad_tx_flags__if">if  ((present &amp; 32768 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 2 &lt;= length)) </TD></TR>
+			<TR><TD PORT="tx_flags_pos">...</TD><TD PORT="tx_flags_size">2</TD><TD>u2le</TD><TD PORT="tx_flags_type">tx_flags</TD></TR>
+			<TR><TD COLSPAN="4" PORT="tx_flags__if">if  ((present &amp; 32768 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 2 &lt;= length)) </TD></TR>
+			<TR><TD PORT="rts_retries_pos">...</TD><TD PORT="rts_retries_size">1</TD><TD>u1</TD><TD PORT="rts_retries_type">rts_retries</TD></TR>
+			<TR><TD COLSPAN="4" PORT="rts_retries__if">if  ((present &amp; 65536 != 0) &amp;&amp; (_io.pos + 1 &lt;= length)) </TD></TR>
+			<TR><TD PORT="data_retries_pos">...</TD><TD PORT="data_retries_size">1</TD><TD>u1</TD><TD PORT="data_retries_type">data_retries</TD></TR>
+			<TR><TD COLSPAN="4" PORT="data_retries__if">if  ((present &amp; 131072 != 0) &amp;&amp; (_io.pos + 1 &lt;= length)) </TD></TR>
+			<TR><TD PORT="pad_xchannel_pos">...</TD><TD PORT="pad_xchannel_size">(4 - _io.pos % 4) % 4</TD><TD></TD><TD PORT="pad_xchannel_type">pad_xchannel</TD></TR>
+			<TR><TD COLSPAN="4" PORT="pad_xchannel__if">if  ((present &amp; 262144 != 0) &amp;&amp; (((_io.pos + 3) / 4) * 4 + 8 &lt;= length)) </TD></TR>
+			<TR><TD PORT="xchannel_pos">...</TD><TD PORT="xchannel_size">8</TD><TD></TD><TD PORT="xchannel_type">xchannel</TD></TR>
+			<TR><TD COLSPAN="4" PORT="xchannel__if">if  ((present &amp; 262144 != 0) &amp;&amp; (((_io.pos + 3) / 4) * 4 + 8 &lt;= length)) </TD></TR>
+			<TR><TD PORT="mcs_pos">...</TD><TD PORT="mcs_size">3</TD><TD></TD><TD PORT="mcs_type">mcs</TD></TR>
+			<TR><TD COLSPAN="4" PORT="mcs__if">if  ((present &amp; 524288 != 0) &amp;&amp; (_io.pos + 3 &lt;= length)) </TD></TR>
+			<TR><TD PORT="pad_ampdu_status_pos">...</TD><TD PORT="pad_ampdu_status_size">(4 - _io.pos % 4) % 4</TD><TD></TD><TD PORT="pad_ampdu_status_type">pad_ampdu_status</TD></TR>
+			<TR><TD COLSPAN="4" PORT="pad_ampdu_status__if">if  ((present &amp; 1048576 != 0) &amp;&amp; (((_io.pos + 3) / 4) * 4 + 8 &lt;= length)) </TD></TR>
+			<TR><TD PORT="ampdu_status_pos">...</TD><TD PORT="ampdu_status_size">8</TD><TD></TD><TD PORT="ampdu_status_type">ampdu_status</TD></TR>
+			<TR><TD COLSPAN="4" PORT="ampdu_status__if">if  ((present &amp; 1048576 != 0) &amp;&amp; (((_io.pos + 3) / 4) * 4 + 8 &lt;= length)) </TD></TR>
+			<TR><TD PORT="pad_vht_pos">...</TD><TD PORT="pad_vht_size">(2 - _io.pos % 2) % 2</TD><TD></TD><TD PORT="pad_vht_type">pad_vht</TD></TR>
+			<TR><TD COLSPAN="4" PORT="pad_vht__if">if  ((present &amp; 2097152 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 12 &lt;= length)) </TD></TR>
+			<TR><TD PORT="vht_pos">...</TD><TD PORT="vht_size">12</TD><TD></TD><TD PORT="vht_type">vht</TD></TR>
+			<TR><TD COLSPAN="4" PORT="vht__if">if  ((present &amp; 2097152 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 12 &lt;= length)) </TD></TR>
+			<TR><TD PORT="pad_timestamp_pos">...</TD><TD PORT="pad_timestamp_size">(8 - _io.pos % 8) % 8</TD><TD></TD><TD PORT="pad_timestamp_type">pad_timestamp</TD></TR>
+			<TR><TD COLSPAN="4" PORT="pad_timestamp__if">if  ((present &amp; 4194304 != 0) &amp;&amp; (((_io.pos + 7) / 8) * 8 + 12 &lt;= length)) </TD></TR>
+			<TR><TD PORT="timestamp_pos">...</TD><TD PORT="timestamp_size">12</TD><TD></TD><TD PORT="timestamp_type">timestamp</TD></TR>
+			<TR><TD COLSPAN="4" PORT="timestamp__if">if  ((present &amp; 4194304 != 0) &amp;&amp; (((_io.pos + 7) / 8) * 8 + 12 &lt;= length)) </TD></TR>
+			<TR><TD PORT="pad_he_pos">...</TD><TD PORT="pad_he_size">(2 - _io.pos % 2) % 2</TD><TD></TD><TD PORT="pad_he_type">pad_he</TD></TR>
+			<TR><TD COLSPAN="4" PORT="pad_he__if">if  ((present &amp; 8388608 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 12 &lt;= length)) </TD></TR>
+			<TR><TD PORT="he_pos">...</TD><TD PORT="he_size">12</TD><TD></TD><TD PORT="he_type">he</TD></TR>
+			<TR><TD COLSPAN="4" PORT="he__if">if  ((present &amp; 8388608 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 12 &lt;= length)) </TD></TR>
+			<TR><TD PORT="pad_he_mu_pos">...</TD><TD PORT="pad_he_mu_size">(2 - _io.pos % 2) % 2</TD><TD></TD><TD PORT="pad_he_mu_type">pad_he_mu</TD></TR>
+			<TR><TD COLSPAN="4" PORT="pad_he_mu__if">if  ((present &amp; 16777216 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 12 &lt;= length)) </TD></TR>
+			<TR><TD PORT="he_mu_pos">...</TD><TD PORT="he_mu_size">12</TD><TD></TD><TD PORT="he_mu_type">he_mu</TD></TR>
+			<TR><TD COLSPAN="4" PORT="he_mu__if">if  ((present &amp; 16777216 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 12 &lt;= length)) </TD></TR>
+			<TR><TD PORT="pad_he_mu_other_user_pos">...</TD><TD PORT="pad_he_mu_other_user_size">(2 - _io.pos % 2) % 2</TD><TD></TD><TD PORT="pad_he_mu_other_user_type">pad_he_mu_other_user</TD></TR>
+			<TR><TD COLSPAN="4" PORT="pad_he_mu_other_user__if">if  ((present &amp; 33554432 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 6 &lt;= length)) </TD></TR>
+			<TR><TD PORT="he_mu_other_user_pos">...</TD><TD PORT="he_mu_other_user_size">6</TD><TD></TD><TD PORT="he_mu_other_user_type">he_mu_other_user</TD></TR>
+			<TR><TD COLSPAN="4" PORT="he_mu_other_user__if">if  ((present &amp; 33554432 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 6 &lt;= length)) </TD></TR>
+			<TR><TD PORT="zero_length_psdu_pos">...</TD><TD PORT="zero_length_psdu_size">1</TD><TD>u1</TD><TD PORT="zero_length_psdu_type">zero_length_psdu</TD></TR>
+			<TR><TD COLSPAN="4" PORT="zero_length_psdu__if">if  ((present &amp; 67108864 != 0) &amp;&amp; (_io.pos + 1 &lt;= length)) </TD></TR>
+			<TR><TD PORT="pad_l_sig_pos">...</TD><TD PORT="pad_l_sig_size">(2 - _io.pos % 2) % 2</TD><TD></TD><TD PORT="pad_l_sig_type">pad_l_sig</TD></TR>
+			<TR><TD COLSPAN="4" PORT="pad_l_sig__if">if  ((present &amp; 134217728 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 4 &lt;= length)) </TD></TR>
+			<TR><TD PORT="l_sig_pos">...</TD><TD PORT="l_sig_size">4</TD><TD></TD><TD PORT="l_sig_type">l_sig</TD></TR>
+			<TR><TD COLSPAN="4" PORT="l_sig__if">if  ((present &amp; 134217728 != 0) &amp;&amp; (((_io.pos + 1) / 2) * 2 + 4 &lt;= length)) </TD></TR>
+			<TR><TD PORT="rest_pos">...</TD><TD PORT="rest_size">length - _io.pos</TD><TD></TD><TD PORT="rest_type">rest</TD></TR>
+			<TR><TD PORT="frame_pos">...</TD><TD PORT="frame_size">⇲</TD><TD>Ieee80211</TD><TD PORT="frame_type">frame</TD></TR>
+		</TABLE>>];
+		radiotap__inst__fcs_present [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+			<TR><TD>fcs_present</TD><TD> ((present &amp; 2 != 0) &amp;&amp; (flags &amp; 16 != 0)) </TD></TR>
+		</TABLE>>];
+	}
+	radiotap__seq:present_type -> radiotap__seq:present_more__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:pad_tsft__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:pad_tsft__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:tsft__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:tsft__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:flags__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:flags__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:rate__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:rate__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:pad_channel__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:pad_channel__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:channel_freq__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:channel_freq__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:channel_flags__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:channel_flags__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:pad_fhss__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:pad_fhss__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:fhss__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:fhss__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:dbm_antenna_signal__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:dbm_antenna_signal__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:dbm_antenna_noise__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:dbm_antenna_noise__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:pad_lock_quality__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:pad_lock_quality__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:lock_quality__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:lock_quality__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:pad_tx_attenuation__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:pad_tx_attenuation__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:tx_attenuation__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:tx_attenuation__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:pad_db_tx_attenuation__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:pad_db_tx_attenuation__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:db_tx_attenuation__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:db_tx_attenuation__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:dbm_tx_power__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:dbm_tx_power__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:antenna__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:antenna__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:db_antenna_signal__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:db_antenna_signal__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:db_antenna_noise__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:db_antenna_noise__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:pad_rx_flags__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:pad_rx_flags__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:rx_flags__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:rx_flags__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:pad_tx_flags__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:pad_tx_flags__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:tx_flags__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:tx_flags__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:rts_retries__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:rts_retries__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:data_retries__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:data_retries__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:pad_xchannel__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:pad_xchannel__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:xchannel__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:xchannel__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:mcs__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:mcs__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:pad_ampdu_status__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:pad_ampdu_status__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:ampdu_status__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:ampdu_status__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:pad_vht__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:pad_vht__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:vht__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:vht__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:pad_timestamp__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:pad_timestamp__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:timestamp__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:timestamp__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:pad_he__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:pad_he__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:he__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:he__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:pad_he_mu__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:pad_he_mu__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:he_mu__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:he_mu__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:pad_he_mu_other_user__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:pad_he_mu_other_user__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:he_mu_other_user__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:he_mu_other_user__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:zero_length_psdu__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:zero_length_psdu__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:pad_l_sig__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:pad_l_sig__if [color="#404040"];
+	radiotap__seq:present_type -> radiotap__seq:l_sig__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:l_sig__if [color="#404040"];
+	radiotap__seq:length_type -> radiotap__seq:rest_size [color="#404040"];
+	radiotap__seq:frame_type -> ieee802_11__seq [style=bold];
+	radiotap__seq:present_type -> radiotap__inst__fcs_present [color="#404040"];
+	radiotap__seq:flags_type -> radiotap__inst__fcs_present [color="#404040"];
+}

@@ -28,6 +28,12 @@ kaitai_struct_formats (git submodule)
   The decoders generated from these specs (tests/*/generated/, build/) are
   derived from them and keep each spec's license. They aren't committed.
 
+  The Graphviz diagrams in tests/graphviz/dot/ and tests/graphviz/svg/ are
+  generated from the same specs (ksc -t graphviz, then Graphviz's dot) and are
+  committed. Each keeps the license of the spec it is drawn from: Apache-2.0
+  for pcapng, link_frame, linux_sll, ieee802_11 and radiotap, and CC0-1.0 for
+  the others.
+
 Gradle Wrapper
   tests/java/gradlew, tests/java/gradlew.bat and
   tests/java/gradle/wrapper/gradle-wrapper.jar
@@ -42,6 +48,7 @@ Tools and libraries that are used but not included
       JavaScript (Apache-2.0), io.kaitai:kaitai-struct-runtime for Java (MIT),
       KaitaiStruct.Runtime.CSharp, kaitai-io/kaitai_struct_php_runtime,
       the kaitai-struct gem for Ruby, and the C++/STL and Lua runtimes
+    Graphviz (EPL-1.0), used to render the diagrams
     Test dependencies: pytest, JUnit, Jackson, JsonUnit, Hamcrest, Gradle,
       NUnit, GoogleTest, nlohmann/json, luaunit, dkjson, Composer, PHPUnit
       and minitest

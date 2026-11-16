@@ -2,6 +2,7 @@
 #   1. compile:  ksc accepts the specs for every target (scripts/compile.py --all)
 #   2. build:    the generated code builds or loads, per language (scripts/build_check.py)
 #   3. decode:   each language decodes every sample to match tests/expected/ (scripts/run_tests.py)
+# plus graphviz: the committed diagrams in tests/graphviz/ are up to date (scripts/graphviz.py --check)
 # Layers 2 and 3 run for Java, Python, JavaScript, C#, C++, Lua, PHP and Ruby, on
 # Ubuntu and Windows (C++ on Ubuntu only). Perl and Rust get layer 1 only: ksc's
 # output for them doesn't work for these specs (see README.md).
@@ -79,6 +80,51 @@ jobs:
         with:
           name: ksc-all
           path: build/ksc-all/
+          if-no-files-found: ignore
+
+  graphviz:
+    name: graphviz diagrams
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: true
+
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install ksc
+        shell: bash
+        run: *install-ksc
+
+      - name: Install Graphviz
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q graphviz
+          dot -V
+
+      # The diagrams in tests/graphviz/ are committed: fail if the .dot files are
+      # stale, an SVG wasn't rendered from its .dot, a diagram doesn't render, or
+      # Graphviz's warnings changed.
+      - name: Check the committed diagrams
+        run: python scripts/graphviz.py --check
+
+      - name: Regenerate the diagrams
+        if: failure()
+        run: python scripts/graphviz.py
+
+      - name: Upload the regenerated diagrams
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: graphviz-diagrams
+          path: tests/graphviz/
           if-no-files-found: ignore
 
   test:

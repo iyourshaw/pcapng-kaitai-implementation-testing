@@ -74,11 +74,13 @@ TARGETS: dict[str, dict] = {
         "outdir": TESTS / "ruby" / "generated",
         "ksc_args": [],
     },
-    # No Perl: ksc 0.11's Perl backend rates 62% on ci.kaitai.io (under the 65%
+    # No Perl: ksc 0.11's Perl backend rates 61% on ci.kaitai.io (under the 65%
     # bar), and it drops every `params:` argument, which pcapng relies on.
     # No Rust: ksc 0.11's Rust output for these specs doesn't compile (calculated
     # endianness, params, switch-on over an instance, ...), and the backend is new.
     # Layer 1 (compile.py --all) still checks that ksc accepts the specs for both.
+    # Graphviz isn't here either: it has no decoding to test. scripts/graphviz.py
+    # makes the committed diagrams in tests/graphviz/ and checks them in CI.
 }
 
 DEFAULT_TARGETS = ["java", "python", "javascript", "csharp", "cpp", "lua", "php", "ruby"]

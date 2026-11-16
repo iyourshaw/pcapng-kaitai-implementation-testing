@@ -40,9 +40,11 @@ are in the `kaitai_struct_formats` submodule, which tracks the `pcapng` branch o
 - **Ruby 3.3+** with Bundler (`winget install RubyInstallerTeam.RubyWithDevKit.4.0`, or set
   `RUBY`). The scripts run `bundle install` into `tests/ruby/vendor/bundle/`. When Ruby is
   installed, `compile.py --all` also runs upstream's own `_build/check-errors` as a cross-check.
+- **Graphviz** (`dot`) for the diagrams (`apt install graphviz`; on Windows the script uses WSL's).
 - **tshark** (Wireshark) is needed only to regenerate the golden files.
 
-The generated decoders go to `tests/<lang>/generated/` and aren't committed.
+The generated decoders go to `tests/<lang>/generated/` and aren't committed. The Graphviz
+diagrams are the exception: they're committed in `tests/graphviz/`.
 
 ## Compile, Build and Test Scripts
 
@@ -51,6 +53,7 @@ The generated decoders go to `tests/<lang>/generated/` and aren't committed.
 | 1. Compile | `python scripts/compile.py --all` | `ksc` accepts the specs for every target (`build/ksc-all/`) |
 | 2. Build | `python scripts/build_check.py` | The generated code compiles or loads in each language (C++: as C++11 and as real C++98, with GCC and Clang) |
 | 3. Decode | `python scripts/run_tests.py` | Each language decodes every sample and matches `tests/expected/` |
+| Diagrams | `python scripts/graphviz.py [--check]` | Regenerates (or, with `--check`, verifies) the committed Graphviz diagrams in `tests/graphviz/` |
 
 Each script takes `--target java,python,javascript,csharp,cpp,lua,php,ruby` (all of them by default)
 to pick languages. `build_check.py` and `run_tests.py` run the compile step first unless you pass
@@ -72,9 +75,9 @@ A ksc target gets a test project only if it rates at least 65% on
 [ci.kaitai.io](https://ci.kaitai.io/), Kaitai's own test suite, and works for these specs.
 Layer 1 still checks that ksc accepts the specs for all of these:
 - **Go** and **Nim**: kaitai.io lists them as "entry-level support".
-- **Perl** (62% on ci.kaitai.io): ksc 0.11's Perl backend drops every `params:` argument, so
+- **Perl** (61% on ci.kaitai.io): ksc 0.11's Perl backend drops every `params:` argument, so
   pcapng's options, name records and `link_frame` don't decode.
-- **Rust** (71%): ksc 0.11's Rust output for these specs doesn't compile. Under calculated
+- **Rust** (70%): ksc 0.11's Rust output for these specs doesn't compile. Under calculated
   endianness it reads `enum:` fields with methods that don't exist, and it never passes the
   byte order to types that take params. It also mistypes a `switch-on` over an instance, and
   some integer expressions.
@@ -102,11 +105,21 @@ The C# and Lua build checks found four naming problems, fixed in the fork (d5003
 - `tcp_segment` (upstream, unchanged until now): the type `flags` is now `tcp_flags`, for the same
   C# reason.
 
+## Diagrams
+
+`ksc -t graphviz` draws each spec as a diagram, and [`tests/graphviz/`](tests/graphviz/README.md)
+holds them for all 14 specs as `.dot` and SVG. That page also lists what ksc's graphviz output
+gets wrong and how it could be improved. For example, `link_frame`:
+
+![link_frame](tests/graphviz/svg/link_frame.svg)
+
 ## CI
 
 `.github/workflows/tests.yml` runs on every push and pull request, and can be started by hand from
 the Actions tab:
 - `compile`: layer 1 for every ksc target, on Ubuntu.
+- `graphviz`: `scripts/graphviz.py --check` on Ubuntu, with Graphviz from apt. It fails if the
+  committed diagrams are stale; then the regenerated ones are uploaded as an artifact.
 - `test`: layers 2 and 3 for each language, on Ubuntu and on Windows. C++ runs on Ubuntu only,
   because GitHub's Windows runners have no WSL (15 jobs).
 
@@ -148,5 +161,6 @@ The `kaitai_struct_formats` submodule isn't covered by this license. As in upstr
 is licensed on its own (`meta/license`). The specs these tests use are either Apache-2.0 (`pcapng`,
 `link_frame`, `linux_sll`, `ieee802_11`, `radiotap`) or CC0-1.0 (`pcap`, `ethernet_frame` and the
 other imported network specs), and both work with Apache-2.0. The generated decoders keep the
-license of the spec they come from, and aren't committed. The Kaitai Struct compiler (GPL-3.0) is
-only used as a build tool; it isn't included here.
+license of the spec they come from, and aren't committed. The Graphviz diagrams in `tests/graphviz/`
+are committed, and they too keep the license of the spec they're drawn from. The Kaitai Struct
+compiler (GPL-3.0) is only used as a build tool; it isn't included here.

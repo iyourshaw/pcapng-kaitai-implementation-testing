@@ -5,7 +5,8 @@ build/
 __pycache__/
 .pytest_cache/
 
-# generated decoders (rebuilt by scripts/compile.py)
+# generated decoders (rebuilt by scripts/compile.py). The Graphviz diagrams in
+# tests/graphviz/dot/ and svg/ are committed on purpose (scripts/graphviz.py).
 tests/*/generated/
 tests/cpp/generated98/
 

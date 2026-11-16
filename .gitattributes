@@ -6,3 +6,8 @@ tests/java/gradlew text eol=lf
 # file starts with 0A 0D 0D 0A, so that a CRLF/LF conversion visibly breaks it.)
 *.pcapng binary
 *.pcap binary
+
+# The committed Graphviz output (tests/graphviz/): LF everywhere, so scripts/graphviz.py
+# --check compares the same bytes on every OS.
+*.dot text eol=lf
+*.svg text eol=lf
