@@ -1,0 +1,822 @@
+{
+  "file": "bus-priority.pcapng",
+  "file_size": 12404,
+  "sections": [
+    {
+      "endian": "be",
+      "version": [
+        1,
+        0
+      ],
+      "section_length": -1,
+      "hardware": "made-up roadside unit",
+      "os": "synthetic",
+      "userappl": "make-examples",
+      "comments": [
+        "Made up: a bus asks intersection 5101 for signal priority, and gets it"
+      ]
+    }
+  ],
+  "blocks": [
+    "section_header",
+    "interface_description",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "interface_statistics"
+  ],
+  "interfaces": [
+    {
+      "section": 0,
+      "link_type": 105,
+      "snaplen": 65535,
+      "name": "wlan0",
+      "description": "DSRC radio on channel 172",
+      "tsresol": 9,
+      "tsoffset": 0,
+      "comments": []
+    }
+  ],
+  "packets": [
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889012400074936",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 521,
+      "orig_len": 521,
+      "ts_ns": "1793889012450093619",
+      "comments": [
+        "The MAP, signed with this unit's certificate.  Later messages from it are signed with its digest"
+      ],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889012500171538",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 351,
+      "orig_len": 351,
+      "ts_ns": "1793889012500602239",
+      "comments": [
+        "The bus asks for priority through the intersection, signed with its certificate, and with its digest after that"
+      ],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889012600232113",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 183,
+      "orig_len": 183,
+      "ts_ns": "1793889012620547612",
+      "comments": [
+        "This unit answers that it's processing the request"
+      ],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889012700123113",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889012800047607",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889012900169669",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889013000182101",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889013100117918",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889013200285967",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889013300040470",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889013400030650",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 362,
+      "orig_len": 362,
+      "ts_ns": "1793889013450184029",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889013500189914",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 220,
+      "orig_len": 220,
+      "ts_ns": "1793889013500582869",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889013600111567",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 183,
+      "orig_len": 183,
+      "ts_ns": "1793889013620047862",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889013700166334",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889013800203976",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889013900295826",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889014000215492",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889014100035940",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889014200001227",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889014300298839",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889014400225859",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 362,
+      "orig_len": 362,
+      "ts_ns": "1793889014450169277",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889014500108005",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 220,
+      "orig_len": 220,
+      "ts_ns": "1793889014500589490",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889014600293206",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 183,
+      "orig_len": 183,
+      "ts_ns": "1793889014620688418",
+      "comments": [
+        "Granted: from the next SPAT, Oak Ave's green lasts until the bus is through"
+      ],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889014700108566",
+      "comments": [
+        "Oak Ave's green, now 7 s longer for the bus"
+      ],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889014800245844",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889014900125868",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889015000019912",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889015100170814",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889015200127298",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889015300009637",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889015400100706",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 362,
+      "orig_len": 362,
+      "ts_ns": "1793889015450191831",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889015500038341",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 220,
+      "orig_len": 220,
+      "ts_ns": "1793889015500806868",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889015600102968",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 183,
+      "orig_len": 183,
+      "ts_ns": "1793889015620355594",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889015700090219",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889015800050253",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889015900201862",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889016000250299",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889016100259025",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889016200175041",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889016300232649",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889016400231926",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 362,
+      "orig_len": 362,
+      "ts_ns": "1793889016450073976",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889016500118731",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889016600090473",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889016700160844",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1793889016800238104",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    }
+  ],
+  "name_records": [],
+  "interface_stats": [
+    {
+      "section": 0,
+      "interface_id": 0,
+      "ts_high": 417672334,
+      "ts_low": 1826249240,
+      "starttime": [
+        417672333,
+        1721053368
+      ],
+      "endtime": [
+        417672334,
+        1826249240
+      ],
+      "ifrecv": 58,
+      "ifdrop": 0
+    }
+  ]
+}

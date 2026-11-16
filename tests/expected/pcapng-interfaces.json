@@ -1,0 +1,192 @@
+{
+  "file": "pcapng-interfaces.pcapng",
+  "file_size": 1528,
+  "sections": [
+    {
+      "endian": "le",
+      "version": [
+        1,
+        0
+      ],
+      "section_length": -1,
+      "hardware": "synthetic",
+      "os": "synthetic",
+      "userappl": "make-test-captures",
+      "comments": [
+        "A comment.\r\nOf two lines, and é."
+      ]
+    }
+  ],
+  "blocks": [
+    "section_header",
+    "name_resolution",
+    "interface_description",
+    "interface_description",
+    "interface_description",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "interface_description",
+    "enhanced_packet",
+    "interface_statistics"
+  ],
+  "interfaces": [
+    {
+      "section": 0,
+      "link_type": 1,
+      "snaplen": 65535,
+      "name": "if0",
+      "description": "The first interface",
+      "tsresol": 6,
+      "tsoffset": 0,
+      "comments": []
+    },
+    {
+      "section": 0,
+      "link_type": 113,
+      "snaplen": 65535,
+      "name": "if1",
+      "description": null,
+      "tsresol": 9,
+      "tsoffset": 0,
+      "comments": []
+    },
+    {
+      "section": 0,
+      "link_type": 127,
+      "snaplen": 2048,
+      "name": "if2",
+      "description": null,
+      "tsresol": 138,
+      "tsoffset": 100,
+      "comments": []
+    },
+    {
+      "section": 0,
+      "link_type": 105,
+      "snaplen": 0,
+      "name": "if3",
+      "description": null,
+      "tsresol": 6,
+      "tsoffset": 0,
+      "comments": []
+    }
+  ],
+  "packets": [
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 114,
+      "orig_len": 114,
+      "ts_ns": "1704110400000000000",
+      "comments": [
+        "The first frame"
+      ],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 1,
+      "cap_len": 115,
+      "orig_len": 115,
+      "ts_ns": "1704110400000000123",
+      "comments": [],
+      "link": {
+        "protocol": 2048
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 2,
+      "cap_len": 124,
+      "orig_len": 1000,
+      "ts_ns": "1704110400500976562",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8,
+        "radiotap_length": 16
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 3,
+      "cap_len": 118,
+      "orig_len": 118,
+      "ts_ns": "1704110401000000000",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8
+      }
+    }
+  ],
+  "name_records": [
+    {
+      "record_type": 1,
+      "address": "c000020a",
+      "names": [
+        "a.example"
+      ]
+    },
+    {
+      "record_type": 1,
+      "address": "c6336414",
+      "names": [
+        "b.example",
+        "c.example"
+      ]
+    },
+    {
+      "record_type": 2,
+      "address": "20010db8000100020003000400050006",
+      "names": [
+        "d.example"
+      ]
+    },
+    {
+      "record_type": 3,
+      "address": "020000001001",
+      "names": [
+        "station"
+      ]
+    },
+    {
+      "record_type": 4,
+      "address": "020000fffe000001",
+      "names": [
+        "station"
+      ]
+    },
+    {
+      "record_type": 77,
+      "value": "010203"
+    }
+  ],
+  "interface_stats": [
+    {
+      "section": 0,
+      "interface_id": 0,
+      "ts_high": 396769,
+      "ts_low": 522933376,
+      "starttime": [
+        396769,
+        520933376
+      ],
+      "endtime": [
+        396769,
+        522933376
+      ],
+      "ifrecv": 100,
+      "ifdrop": 1,
+      "filteraccept": 99,
+      "osdrop": 2,
+      "usrdeliv": 97,
+      "comments": [
+        "Totals"
+      ]
+    }
+  ]
+}

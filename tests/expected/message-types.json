@@ -1,0 +1,362 @@
+{
+  "file": "message-types.pcapng",
+  "file_size": 3712,
+  "sections": [
+    {
+      "endian": "le",
+      "version": [
+        1,
+        0
+      ],
+      "section_length": -1,
+      "hardware": null,
+      "os": null,
+      "userappl": "TShark (Wireshark) 4.6.9 (v4.6.9-0-g2d548b197c75)",
+      "comments": []
+    }
+  ],
+  "blocks": [
+    "section_header",
+    "interface_description",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet"
+  ],
+  "interfaces": [
+    {
+      "section": 0,
+      "link_type": 1,
+      "snaplen": 65535,
+      "name": null,
+      "description": null,
+      "tsresol": 6,
+      "tsoffset": 0,
+      "comments": []
+    }
+  ],
+  "packets": [
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 242,
+      "orig_len": 242,
+      "ts_ns": "1793889000100619000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 88,
+      "orig_len": 88,
+      "ts_ns": "1793889000300490000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 61,
+      "orig_len": 61,
+      "ts_ns": "1793889000500681000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 36,
+      "orig_len": 36,
+      "ts_ns": "1793889000700888000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 77,
+      "orig_len": 77,
+      "ts_ns": "1793889000900833000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 77,
+      "orig_len": 77,
+      "ts_ns": "1793889001100638000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 110,
+      "orig_len": 110,
+      "ts_ns": "1793889001300617000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 44,
+      "orig_len": 44,
+      "ts_ns": "1793889001500722000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 150,
+      "orig_len": 150,
+      "ts_ns": "1793889001700442000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 55,
+      "orig_len": 55,
+      "ts_ns": "1793889001900143000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 72,
+      "orig_len": 72,
+      "ts_ns": "1793889002100470000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 97,
+      "orig_len": 97,
+      "ts_ns": "1793889002300830000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 60,
+      "orig_len": 60,
+      "ts_ns": "1793889002500732000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 150,
+      "orig_len": 150,
+      "ts_ns": "1793889002700730000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 75,
+      "orig_len": 75,
+      "ts_ns": "1793889002900638000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 120,
+      "orig_len": 120,
+      "ts_ns": "1793889003100729000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 75,
+      "orig_len": 75,
+      "ts_ns": "1793889003300290000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 72,
+      "orig_len": 72,
+      "ts_ns": "1793889003500535000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 124,
+      "orig_len": 124,
+      "ts_ns": "1793889003700095000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 180,
+      "orig_len": 180,
+      "ts_ns": "1793889003900412000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 193,
+      "orig_len": 193,
+      "ts_ns": "1793889004100601000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 102,
+      "orig_len": 102,
+      "ts_ns": "1793889004300793000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 75,
+      "orig_len": 75,
+      "ts_ns": "1793889004500370000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 97,
+      "orig_len": 97,
+      "ts_ns": "1793889004700436000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 100,
+      "orig_len": 100,
+      "ts_ns": "1793889004900827000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 80,
+      "orig_len": 80,
+      "ts_ns": "1793889005100684000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 93,
+      "orig_len": 93,
+      "ts_ns": "1793889005300247000",
+      "comments": [],
+      "link": {
+        "ether_type": 35036
+      }
+    }
+  ],
+  "name_records": [],
+  "interface_stats": []
+}

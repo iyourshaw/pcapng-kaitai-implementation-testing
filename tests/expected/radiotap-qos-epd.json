@@ -1,0 +1,52 @@
+{
+  "file": "radiotap-qos-epd.pcapng",
+  "file_size": 844,
+  "sections": [
+    {
+      "endian": "le",
+      "version": [
+        1,
+        0
+      ],
+      "section_length": -1,
+      "hardware": null,
+      "os": null,
+      "userappl": "TShark (Wireshark) 4.6.9 (v4.6.9-0-g2d548b197c75)",
+      "comments": []
+    }
+  ],
+  "blocks": [
+    "section_header",
+    "interface_description",
+    "enhanced_packet"
+  ],
+  "interfaces": [
+    {
+      "section": 0,
+      "link_type": 127,
+      "snaplen": 2048,
+      "name": null,
+      "description": null,
+      "tsresol": 6,
+      "tsoffset": 0,
+      "comments": []
+    }
+  ],
+  "packets": [
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 702,
+      "orig_len": 702,
+      "ts_ns": "1704110400125788000",
+      "comments": [],
+      "link": {
+        "wlan_type": 2,
+        "wlan_subtype": 8,
+        "radiotap_length": 32
+      }
+    }
+  ],
+  "name_records": [],
+  "interface_stats": []
+}

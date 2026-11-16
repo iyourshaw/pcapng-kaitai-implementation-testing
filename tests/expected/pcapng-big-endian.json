@@ -1,0 +1,168 @@
+{
+  "file": "pcapng-big-endian.pcapng",
+  "file_size": 1780,
+  "sections": [
+    {
+      "endian": "be",
+      "version": [
+        1,
+        0
+      ],
+      "section_length": -1,
+      "hardware": "synthetic",
+      "os": "synthetic",
+      "userappl": "make-test-captures",
+      "comments": []
+    }
+  ],
+  "blocks": [
+    "section_header",
+    "interface_description",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "enhanced_packet",
+    "interface_statistics"
+  ],
+  "interfaces": [
+    {
+      "section": 0,
+      "link_type": 113,
+      "snaplen": 65535,
+      "name": "if0",
+      "description": null,
+      "tsresol": 9,
+      "tsoffset": 0,
+      "comments": []
+    }
+  ],
+  "packets": [
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 128,
+      "orig_len": 128,
+      "ts_ns": "1704110400000000000",
+      "comments": [],
+      "link": {
+        "protocol": 34525
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 128,
+      "orig_len": 128,
+      "ts_ns": "1704110400025000123",
+      "comments": [],
+      "link": {
+        "protocol": 34525
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 128,
+      "orig_len": 128,
+      "ts_ns": "1704110400050000246",
+      "comments": [],
+      "link": {
+        "protocol": 34525
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 128,
+      "orig_len": 128,
+      "ts_ns": "1704110400075000369",
+      "comments": [],
+      "link": {
+        "protocol": 34525
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 128,
+      "orig_len": 128,
+      "ts_ns": "1704110400100000492",
+      "comments": [],
+      "link": {
+        "protocol": 34525
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 128,
+      "orig_len": 128,
+      "ts_ns": "1704110400125000615",
+      "comments": [],
+      "link": {
+        "protocol": 34525
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 128,
+      "orig_len": 128,
+      "ts_ns": "1704110400150000738",
+      "comments": [],
+      "link": {
+        "protocol": 34525
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 128,
+      "orig_len": 128,
+      "ts_ns": "1704110400175000861",
+      "comments": [],
+      "link": {
+        "protocol": 34525
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 128,
+      "orig_len": 128,
+      "ts_ns": "1704110400200000984",
+      "comments": [],
+      "link": {
+        "protocol": 34525
+      }
+    },
+    {
+      "section": 0,
+      "interface_id": 0,
+      "cap_len": 128,
+      "orig_len": 128,
+      "ts_ns": "1704110400225001107",
+      "comments": [],
+      "link": {
+        "protocol": 34525
+      }
+    }
+  ],
+  "name_records": [],
+  "interface_stats": [
+    {
+      "section": 0,
+      "interface_id": 0,
+      "ts_high": 396769121,
+      "ts_low": 1492334414,
+      "ifrecv": 10,
+      "ifdrop": 0
+    }
+  ]
+}
