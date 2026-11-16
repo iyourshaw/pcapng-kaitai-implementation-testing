@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Layer 1: compile the pcapng specs with ksc.
 
-    python scripts/compile.py                       # java, python, javascript -> tests/<lang>/generated
+    python scripts/compile.py                       # every test-project language -> tests/<lang>/generated
     python scripts/compile.py --target python       # just one target
     python scripts/compile.py --all                 # every ksc target -> build/ksc-all (compile check only)
 
@@ -35,9 +35,20 @@ KNOWN_FAILURES = {
 }
 
 
+def clear_dir(path) -> None:
+    """Empty `path`, keeping the directory itself: on Windows an IDE or shell often
+    holds a handle on it, and removing it would fail."""
+    if not path.exists():
+        return
+    for child in path.iterdir():
+        if child.is_dir() and not child.is_symlink():
+            shutil.rmtree(child)
+        else:
+            child.unlink()
+
+
 def compile_one(target: str, outdir, extra_args) -> bool:
-    if outdir.exists():
-        shutil.rmtree(outdir)
+    clear_dir(outdir)
     code, log, stderr = run_ksc([target], outdir, extra_args)
     return report(target, code, log, stderr)
 
@@ -70,16 +81,18 @@ def compile_targets(targets: list[str]) -> bool:
     ok = True
     for t in targets:
         cfg = TARGETS[t]
-        good = compile_one(t, cfg["outdir"], cfg["ksc_args"])
-        print(f"[{t}] {'OK' if good else 'FAILED'} -> {cfg['outdir']}")
-        ok &= good
+        ksc_target = cfg.get("ksc_target", t)
+        outputs = [(cfg["outdir"], cfg["ksc_args"]), *cfg.get("extra_outputs", [])]
+        for outdir, args in outputs:
+            good = compile_one(ksc_target, outdir, args)
+            print(f"[{t}] {'OK' if good else 'FAILED'} -> {outdir}")
+            ok &= good
     return ok
 
 
 def compile_all() -> bool:
     outdir = BUILD / "ksc-all"
-    if outdir.exists():
-        shutil.rmtree(outdir)
+    clear_dir(outdir)
     code, log, stderr = run_ksc(["all"], outdir, ["--java-package", "pcapng.formats"])
     ok = report("all", code, log, stderr, KNOWN_FAILURES)
     if log is not None:
@@ -95,7 +108,7 @@ def compile_all() -> bool:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--target", help="comma-separated targets (default: java,python,javascript)")
+    ap.add_argument("--target", help="comma-separated targets (default: all test-project languages)")
     ap.add_argument("--all", action="store_true", help="compile for every ksc target into build/ksc-all")
     args = ap.parse_args()
 

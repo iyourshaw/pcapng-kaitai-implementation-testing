@@ -31,6 +31,7 @@ SPECS = [
 ]
 
 JAVA_PACKAGE = "pcapng.formats"
+CSHARP_NAMESPACE = "PcapngFormats"  # not Pcapng.*: a namespace named Pcapng would hide the class
 
 # Per-target settings for the languages that have a test project in tests/.
 # To add a language: add an entry here, a builder in build_check.py and a
@@ -48,11 +49,31 @@ TARGETS: dict[str, dict] = {
         "outdir": TESTS / "javascript" / "generated",
         "ksc_args": [],
     },
+    "csharp": {
+        "outdir": TESTS / "csharp" / "generated",
+        "ksc_args": ["--dotnet-namespace", CSHARP_NAMESPACE],
+    },
+    "cpp": {
+        # ksc's -t cpp_stl, as C++11. The C++98 flavour goes to "extra_outputs";
+        # it's build-checked only (GoogleTest needs C++17).
+        "ksc_target": "cpp_stl",
+        "outdir": TESTS / "cpp" / "generated",
+        "ksc_args": ["--cpp-standard", "11"],
+        "extra_outputs": [(TESTS / "cpp" / "generated98", ["--cpp-standard", "98"])],
+    },
+    "lua": {
+        "outdir": TESTS / "lua" / "generated",
+        "ksc_args": [],
+    },
 }
 
-DEFAULT_TARGETS = ["java", "python", "javascript"]
+DEFAULT_TARGETS = ["java", "python", "javascript", "csharp", "cpp", "lua"]
 
 IS_WINDOWS = os.name == "nt"
+
+
+class MissingTool(Exception):
+    """A toolchain isn't installed. The message says what to install."""
 
 
 def die(msg: str, code: int = 2) -> None:
@@ -236,3 +257,101 @@ def npm() -> str:
     if not exe:
         die("npm not found")
     return exe
+
+
+def find_dotnet() -> str:
+    dotnet = find_tool("DOTNET", ["dotnet"], [Path(r"C:\Program Files\dotnet\dotnet.exe")])
+    if not dotnet:
+        raise MissingTool("dotnet not found; install the .NET 10 SDK "
+                          "(winget install Microsoft.DotNet.SDK.10) or set DOTNET")
+    return dotnet
+
+
+def find_lua() -> str:
+    """A Lua 5.3 or 5.4 interpreter (the Kaitai Lua runtime needs string.unpack)."""
+    local = Path(os.environ.get("LOCALAPPDATA", "")) / "Programs" / "Lua" / "bin" / "lua.exe"
+    lua = find_tool("LUA", ["lua5.4", "lua54", "lua", "lua5.3"], [local] if IS_WINDOWS else [])
+    if not lua:
+        raise MissingTool("lua not found; install Lua 5.4 (winget install DEVCOM.Lua, "
+                          "or apt install lua5.4) or set LUA")
+    return lua
+
+
+# --- POSIX commands (C++ runs in WSL on Windows) -------------------------------
+
+def to_posix_path(p: Path) -> str:
+    """The path as the POSIX side sees it: unchanged on Linux, /mnt/<drive>/... for WSL."""
+    p = Path(p).resolve()
+    if not IS_WINDOWS:
+        return str(p)
+    drive, rest = p.drive, p.as_posix()[len(p.drive):]
+    return f"/mnt/{drive.rstrip(':').lower()}{rest}"
+
+
+def posix_cmd(cmd: list) -> list[str]:
+    """Wrap a command so it runs on Linux: directly there, or through wsl.exe on Windows."""
+    cmd = [str(c) for c in cmd]
+    if not IS_WINDOWS:
+        return cmd
+    wsl = shutil.which("wsl.exe") or shutil.which("wsl")
+    if not wsl:
+        raise MissingTool("WSL not found; install it (wsl --install -d Ubuntu-24.04)")
+    return [wsl, "--exec", *cmd]
+
+
+# --- pinned downloads -----------------------------------------------------------
+
+def fetch_file(url: str, sha256: str, dest: Path) -> Path:
+    """Download `url` to `dest` unless it's already there with the right sha256."""
+    import hashlib
+    import urllib.request
+
+    def digest(path: Path) -> str:
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+
+    if dest.is_file() and digest(dest) == sha256:
+        return dest
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    print(f"+ fetch {url}", flush=True)
+    tmp = dest.with_name(dest.name + ".part")
+    with urllib.request.urlopen(url, timeout=60) as resp:
+        tmp.write_bytes(resp.read())
+    got = digest(tmp)
+    if got != sha256:
+        tmp.unlink()
+        raise RuntimeError(f"sha256 mismatch for {url}: expected {sha256}, got {got}")
+    tmp.replace(dest)
+    return dest
+
+
+# Lua has no package manager these tests can rely on (luarocks needs a C compiler
+# on Windows), so the runtime and the two test libraries are single files,
+# downloaded into tests/lua/vendor/ (gitignored) and checked against these hashes.
+_LUA_RUNTIME = "https://raw.githubusercontent.com/kaitai-io/kaitai_struct_lua_runtime/0.11/"
+LUA_VENDOR = {
+    "class.lua": (_LUA_RUNTIME + "class.lua",
+                  "478b6895906d05f9ebaa570277d5ac976c97a0275929a28691eab385b5e7b81f"),
+    "enum.lua": (_LUA_RUNTIME + "enum.lua",
+                 "30f0d09c79683dd74bb233b6d420cf600ccdc319229f806cd05fd726c542a7aa"),
+    "kaitaistruct.lua": (_LUA_RUNTIME + "kaitaistruct.lua",
+                         "3eaa55e6e109c9d05054a3e86e8a4381fec86ee5444e4d4e4f743877c2c5fe8d"),
+    "string_decode.lua": (_LUA_RUNTIME + "string_decode.lua",
+                          "ef3c38e563075a45d2eec1110b3b13232375d14a7abc1fc30a22728069537412"),
+    "string_stream.lua": (_LUA_RUNTIME + "string_stream.lua",
+                          "e236649d7a7b6a392ce01c8856ab7a4171ea0f6252488c177b5132a2b1544171"),
+    "utils.lua": (_LUA_RUNTIME + "utils.lua",
+                  "e0f1e6b4badc4cc02dbd747ef4ad86e2a00212896bff615dc1e9b8a18f2fe473"),
+    # luaunit 3.5 (BSD-2-Clause) and dkjson 2.8 (MIT)
+    "luaunit.lua": ("https://raw.githubusercontent.com/bluebird75/luaunit/LUAUNIT_V3_5/luaunit.lua",
+                    "150ed14606ea66c6a02b3142dde02bdf6d48764fcd2af6bf85bfecd7d98a7d0b"),
+    "dkjson.lua": ("https://dkolf.de/dkjson-lua/dkjson-2.8.lua",
+                   "eb3bf160688fb395a2db6bc52eeff4f7855a6321d2b41bdc754554d13f4e7d44"),
+}
+
+
+def lua_vendor() -> Path:
+    """Fetch the Lua runtime and test libraries (if needed) and return their directory."""
+    vendor = TESTS / "lua" / "vendor"
+    for name, (url, sha256) in LUA_VENDOR.items():
+        fetch_file(url, sha256, vendor / name)
+    return vendor

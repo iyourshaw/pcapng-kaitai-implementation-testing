@@ -1,0 +1,8 @@
+# Shell scripts run on Linux (and in WSL), so keep them LF on every checkout.
+*.sh text eol=lf
+tests/java/gradlew text eol=lf
+
+# Captures are binary: never convert line endings or diff them as text. (A pcapng
+# file starts with 0A 0D 0D 0A, so that a CRLF/LF conversion visibly breaks it.)
+*.pcapng binary
+*.pcap binary

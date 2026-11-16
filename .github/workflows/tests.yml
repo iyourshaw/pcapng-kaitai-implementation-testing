@@ -1,8 +1,9 @@
 # Runs the three test layers (see README.md) on every push and pull request:
 #   1. compile:  ksc accepts the specs for every target (scripts/compile.py --all)
-#   2. build:    the generated Java, Python and JavaScript code builds (scripts/build_check.py)
+#   2. build:    the generated code builds or loads, per language (scripts/build_check.py)
 #   3. decode:   each language decodes every sample to match tests/expected/ (scripts/run_tests.py)
-# Layers 2 and 3 run on Ubuntu and Windows.
+# Layers 2 and 3 run for Java, Python, JavaScript, C#, C++ and Lua, on Ubuntu and
+# Windows (C++ on Ubuntu only).
 
 name: tests
 
@@ -24,6 +25,11 @@ env:
   PYTHON_VERSION: "3.13"
   JAVA_VERSION: "25"
   NODE_VERSION: "24"
+  DOTNET_VERSION: "10.0.x"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_NOLOGO: "1"
+  LUA_VERSION: "5.4.6"
+  LUA_WIN64_SHA256: 24b4e1b3ee77c71199d84a8597f15ad4e11e011b8aac3789b6e2bc805e9844a4
 
 jobs:
   compile:
@@ -79,7 +85,12 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        target: [java, python, javascript]
+        target: [java, python, javascript, csharp, cpp, lua]
+        exclude:
+          # The C++ tests build with GCC and Clang on Linux (in WSL when run
+          # locally on Windows); GitHub's Windows runners have no WSL distro.
+          - os: windows-latest
+            target: cpp
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -124,6 +135,38 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
           cache-dependency-path: tests/javascript/package-lock.json
+
+      - name: Set up .NET
+        if: matrix.target == 'csharp'
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install C++ build tools
+        if: matrix.target == 'cpp'
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q g++ clang cmake ninja-build
+          g++ --version | head -n 1; clang++ --version | head -n 1; cmake --version | head -n 1
+
+      - name: Install Lua
+        if: matrix.target == 'lua'
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" = Windows ]; then
+            # The same Lua 5.4 build as winget's DEVCOM.Lua, from its zip.
+            zip=Lua-${LUA_VERSION}-win64.zip
+            cd "$RUNNER_TEMP"
+            curl -fsSL -o "$zip" "https://github.com/DevelopersCommunity/cmake-lua/releases/download/v${LUA_VERSION}/${zip}"
+            echo "${LUA_WIN64_SHA256}  ${zip}" | sha256sum -c -
+            unzip -q "$zip" -d lua
+            echo "LUA=$RUNNER_TEMP/lua/bin/lua.exe" >> "$GITHUB_ENV"
+            "$RUNNER_TEMP/lua/bin/lua.exe" -v
+          else
+            sudo apt-get update -q
+            sudo apt-get install -y -q lua5.4
+            lua5.4 -v
+          fi
 
       - name: Build check
         run: python scripts/build_check.py --target ${{ matrix.target }}

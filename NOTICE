@@ -39,5 +39,10 @@ Tools and libraries that are used but not included
   aren't redistributed here. Each has its own license:
     Kaitai Struct compiler 0.11 (GPL-3.0-or-later), used as a build tool
     Kaitai Struct runtimes: kaitaistruct for Python (MIT), kaitai-struct for
-      JavaScript (Apache-2.0), io.kaitai:kaitai-struct-runtime for Java (MIT)
-    Test dependencies: pytest, JUnit, Jackson, JsonUnit, Hamcrest and Gradle
+      JavaScript (Apache-2.0), io.kaitai:kaitai-struct-runtime for Java (MIT),
+      KaitaiStruct.Runtime.CSharp, and the C++/STL and Lua runtimes
+    Test dependencies: pytest, JUnit, Jackson, JsonUnit, Hamcrest, Gradle,
+      NUnit, GoogleTest, nlohmann/json, luaunit and dkjson
+  The Lua runtime, luaunit and dkjson are downloaded into tests/lua/vendor/,
+  and the C++ ones into the CMake build directory. Neither location is
+  committed.

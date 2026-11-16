@@ -7,6 +7,7 @@ __pycache__/
 
 # generated decoders (rebuilt by scripts/compile.py)
 tests/*/generated/
+tests/cpp/generated98/
 
 # per-language tooling
 tests/python/.venv/
@@ -14,3 +15,6 @@ tests/javascript/node_modules/
 tests/java/build/
 tests/java/.gradle/
 tests/java/.kotlin/
+tests/csharp/bin/
+tests/csharp/obj/
+tests/lua/vendor/
