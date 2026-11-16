@@ -179,9 +179,16 @@ def venv_python(venv: Path) -> Path | None:
     return exe if exe.is_file() else None
 
 
-def gradlew() -> Path:
+def gradle_cmd() -> list[str]:
+    """The command that runs the Gradle wrapper in tests/java.
+
+    On POSIX it runs through `sh`, so it works even when git checks gradlew out
+    without its exec bit.
+    """
     java_dir = TESTS / "java"
-    return java_dir / ("gradlew.bat" if IS_WINDOWS else "gradlew")
+    if IS_WINDOWS:
+        return [str(java_dir / "gradlew.bat")]
+    return ["sh", str(java_dir / "gradlew")]
 
 
 def _is_temurin_25(jdk: Path) -> bool:

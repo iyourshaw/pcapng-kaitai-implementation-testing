@@ -15,7 +15,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from _common import TESTS, gradlew, java_env, npm, parse_targets, run, venv_python
+from _common import TESTS, gradle_cmd, java_env, npm, parse_targets, run, venv_python
 
 
 def test_python() -> bool:
@@ -30,7 +30,7 @@ def test_python() -> bool:
 
 
 def test_java() -> bool:
-    return run([gradlew(), "test", "--rerun", "--console=plain"], cwd=TESTS / "java", env=java_env()).returncode == 0
+    return run([*gradle_cmd(), "test", "--rerun", "--console=plain"], cwd=TESTS / "java", env=java_env()).returncode == 0
 
 
 def test_javascript() -> bool:

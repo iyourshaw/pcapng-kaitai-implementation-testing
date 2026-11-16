@@ -1,0 +1,142 @@
+# Runs the three test layers (see README.md) on every push and pull request:
+#   1. compile:  ksc accepts the specs for every target (scripts/compile.py --all)
+#   2. build:    the generated Java, Python and JavaScript code builds (scripts/build_check.py)
+#   3. decode:   each language decodes every sample to match tests/expected/ (scripts/run_tests.py)
+# Layers 2 and 3 run on Ubuntu and Windows.
+
+name: tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  KSC_VERSION: "0.11"
+  KSC_SHA256: ff89389d9dc9e770d78a24af328763cb1f8e7b31ce7766c9edf10669a060f2a2
+  PYTHON_VERSION: "3.13"
+  JAVA_VERSION: "25"
+  NODE_VERSION: "24"
+
+jobs:
+  compile:
+    name: compile (all ksc targets)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: true
+
+      # ksc runs on Java; Temurin 25 is the JDK the Java tests use too.
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install ksc
+        shell: bash
+        run: &install-ksc |
+          zip="kaitai-struct-compiler-${KSC_VERSION}.zip"
+          cd "$RUNNER_TEMP"
+          curl -fsSL -o "$zip" "https://github.com/kaitai-io/kaitai_struct_compiler/releases/download/${KSC_VERSION}/${zip}"
+          echo "${KSC_SHA256}  ${zip}" | sha256sum -c -
+          unzip -q "$zip"
+          bin="$RUNNER_TEMP/kaitai-struct-compiler-${KSC_VERSION}/bin"
+          # scripts/_common.find_ksc() reads $KSC first.
+          if [ "$RUNNER_OS" = Windows ]; then
+            echo "KSC=$bin/kaitai-struct-compiler.bat" >> "$GITHUB_ENV"
+          else
+            echo "KSC=$bin/kaitai-struct-compiler" >> "$GITHUB_ENV"
+            "$bin/kaitai-struct-compiler" --version
+          fi
+
+      - name: Compile for every target
+        run: python scripts/compile.py --all
+
+      - name: Upload ksc output
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ksc-all
+          path: build/ksc-all/
+          if-no-files-found: ignore
+
+  test:
+    name: ${{ matrix.target }} (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        target: [java, python, javascript]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: true
+
+      # Every job needs Java for ksc. JAVA_HOME is a Temurin 25, which is what
+      # scripts/_common.java_env() and the Gradle toolchain require.
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: ${{ matrix.target == 'python' && 'pip' || '' }}
+          cache-dependency-path: tests/python/requirements.txt
+
+      - name: Install ksc
+        shell: bash
+        run: *install-ksc
+
+      - name: Set up Gradle
+        if: matrix.target == 'java'
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+        with:
+          # 'enhanced', the default, is a commercial caching service.
+          cache-provider: basic
+
+      - name: Set up the Python venv
+        if: matrix.target == 'python'
+        shell: bash
+        run: |
+          python -m venv tests/python/.venv
+          if [ "$RUNNER_OS" = Windows ]; then py=tests/python/.venv/Scripts/python; else py=tests/python/.venv/bin/python; fi
+          "$py" -m pip install --disable-pip-version-check -r tests/python/requirements.txt
+
+      - name: Set up Node
+        if: matrix.target == 'javascript'
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: tests/javascript/package-lock.json
+
+      - name: Build check
+        run: python scripts/build_check.py --target ${{ matrix.target }}
+
+      - name: Decode tests
+        run: python scripts/run_tests.py --target ${{ matrix.target }} --no-compile
+
+      - name: Upload Java test reports
+        if: failure() && matrix.target == 'java'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: java-test-reports-${{ matrix.os }}
+          path: |
+            tests/java/build/reports/tests/test/
+            tests/java/build/test-results/
+          if-no-files-found: ignore

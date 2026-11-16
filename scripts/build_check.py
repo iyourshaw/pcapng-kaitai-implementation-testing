@@ -18,7 +18,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from _common import (TARGETS, TESTS, gradlew, java_env, npm, parse_targets, run,
+from _common import (TARGETS, TESTS, gradle_cmd, java_env, npm, parse_targets, run,
                      venv_python)
 
 
@@ -45,7 +45,7 @@ def build_python() -> bool:
 
 def build_java() -> bool:
     proj = TESTS / "java"
-    return run([gradlew(), "compileJava", "--console=plain"], cwd=proj, env=java_env()).returncode == 0
+    return run([*gradle_cmd(), "compileJava", "--console=plain"], cwd=proj, env=java_env()).returncode == 0
 
 
 def build_javascript() -> bool:
