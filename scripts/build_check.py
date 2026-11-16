@@ -25,8 +25,9 @@ import re
 import sys
 from pathlib import Path
 
-from _common import (TARGETS, TESTS, MissingTool, find_dotnet, find_lua, gradle_cmd, java_env,
-                     lua_vendor, npm, parse_targets, posix_cmd, run, to_posix_path, venv_python)
+from _common import (PHP_NAMESPACE, TARGETS, TESTS, MissingTool, composer_cmd, find_dotnet, find_lua,
+                     find_ruby, gradle_cmd, java_env, lua_vendor, npm, parse_targets, php_cmd, posix_cmd,
+                     ruby_env, run, to_posix_path, venv_python)
 
 # Build errors that are known and don't fail the check, per target: (regex
 # matched against each error line, reason). Keep each one specific, so it's
@@ -181,6 +182,90 @@ def build_lua() -> list[str]:
     return errors
 
 
+def ensure_php_deps() -> list[str]:
+    proj = TESTS / "php"
+    if (proj / "vendor" / "autoload.php").is_file():
+        return []
+    proc = run([*composer_cmd(), "install", "--no-interaction", "--no-progress"], cwd=proj)
+    return [] if proc.returncode == 0 else ["php: composer install failed (see above)"]
+
+
+def build_php() -> list[str]:
+    gen = TARGETS["php"]["outdir"]
+    files = sorted(gen.glob("*.php"))
+    if not files:
+        return ["no generated PHP files"]
+    errors = ensure_php_deps()
+    if errors:
+        return errors
+    php = php_cmd()
+    # Syntax-check each file, then load them all and check each defines its class.
+    for f in files:
+        proc = run([*php, "-l", f], capture=True)
+        if proc.returncode != 0:
+            errors.append(f"{f.name}: " + next((l for l in (proc.stdout + proc.stderr).splitlines() if l.strip()), "lint failed"))
+    if errors:
+        return errors
+    code = (
+        f"require {str(TESTS / 'php' / 'vendor' / 'autoload.php')!r};\n"
+        f"foreach (glob({str(gen)!r} . '/*.php') as $f) require_once $f;\n"
+        f"foreach (glob({str(gen)!r} . '/*.php') as $f) {{\n"
+        f"  $c = '\\\\{PHP_NAMESPACE}\\\\' . basename($f, '.php');\n"
+        "  if (!class_exists($c)) { fwrite(STDERR, \"no class $c\\n\"); exit(1); }\n"
+        "}\n"
+        "echo 'loaded ', count(glob(" + repr(str(gen)) + " . '/*.php')), \" files\\n\";\n"
+    )
+    proc = run([*php, "-r", code], capture=True)
+    lines = _output(proc)
+    return [] if proc.returncode == 0 else [f"php: {l}" for l in lines if l.strip()] or ["php: load failed"]
+
+
+def ensure_ruby_deps() -> list[str]:
+    env = ruby_env()
+    ruby = find_ruby()
+    if run([ruby, "-S", "bundle", "check"], env=env, capture=True).returncode == 0:
+        return []
+    proc = run([ruby, "-S", "bundle", "install", "--quiet"], env=env)
+    return [] if proc.returncode == 0 else ["ruby: bundle install failed (see above)"]
+
+
+def build_ruby() -> list[str]:
+    gen = TARGETS["ruby"]["outdir"]
+    modules = sorted(p.stem for p in gen.glob("*.rb"))
+    if not modules:
+        return ["no generated Ruby files"]
+    errors = ensure_ruby_deps()
+    if errors:
+        return errors
+    # Syntax-check, then require each module in the same process (rescuing each
+    # failure) and check it defines its class.
+    code = (
+        f"$LOAD_PATH.unshift({str(gen)!r})\n"
+        "bad = 0\n"
+        f"{modules!r}.each do |m|\n"
+        "  cls = m.split('_').map { |p| p[0].upcase + p[1..] }.join\n"
+        "  begin\n"
+        "    require m\n"
+        "    Object.const_get(cls)\n"
+        "  rescue Exception => e\n"
+        "    warn \"#{m}: #{e.class}: #{e.message.lines.first}\"\n"
+        "    bad += 1\n"
+        "  end\n"
+        "end\n"
+        f"puts \"loaded #{{{len(modules)} - bad}} of {len(modules)} modules\"\n"
+        "exit(bad.zero? ? 0 : 1)\n"
+    )
+    proc = run([find_ruby(), "-S", "bundle", "exec", "ruby", "-w", "-e", code], env=ruby_env(), capture=True)
+    # -w prints a backtrace under each warning; show the warnings without them.
+    lines = [l for l in (proc.stdout + proc.stderr).splitlines() if l.strip() and not l.lstrip().startswith("from ")]
+    for l in lines:
+        print(re.sub(r"^(\S+: warning: )\1", r"\1", l.replace(str(gen) + "/", "").replace(str(gen).replace("\\", "/") + "/", "")))
+    errors = [l.strip() for l in lines if re.match(r"^[a-z0-9_]+: [A-Z]\w*(Error|Exception)", l)]
+    if proc.returncode != 0 and not errors:
+        errors = ["ruby: load failed (see above)"]
+    return errors
+
+
 BUILDERS = {
     "python": build_python,
     "java": build_java,
@@ -188,6 +273,8 @@ BUILDERS = {
     "csharp": build_csharp,
     "cpp": build_cpp,
     "lua": build_lua,
+    "php": build_php,
+    "ruby": build_ruby,
 }
 
 

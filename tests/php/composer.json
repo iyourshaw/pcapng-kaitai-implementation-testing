@@ -1,0 +1,21 @@
+{
+    "name": "pcapng-kaitai/php-tests",
+    "description": "Decodes the pcapng samples with the PHP code that ksc generates (in generated/, made by scripts/compile.py).",
+    "type": "project",
+    "license": "Apache-2.0",
+    "require": {
+        "php": ">=8.4",
+        "kaitai-io/kaitai_struct_php_runtime": "0.11"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^13.4"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PcapngTests\\": "src/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

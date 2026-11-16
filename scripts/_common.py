@@ -32,6 +32,7 @@ SPECS = [
 
 JAVA_PACKAGE = "pcapng.formats"
 CSHARP_NAMESPACE = "PcapngFormats"  # not Pcapng.*: a namespace named Pcapng would hide the class
+PHP_NAMESPACE = "PcapngFormats"
 
 # Per-target settings for the languages that have a test project in tests/.
 # To add a language: add an entry here, a builder in build_check.py and a
@@ -65,9 +66,22 @@ TARGETS: dict[str, dict] = {
         "outdir": TESTS / "lua" / "generated",
         "ksc_args": [],
     },
+    "php": {
+        "outdir": TESTS / "php" / "generated",
+        "ksc_args": ["--php-namespace", PHP_NAMESPACE],
+    },
+    "ruby": {
+        "outdir": TESTS / "ruby" / "generated",
+        "ksc_args": [],
+    },
+    # No Perl: ksc 0.11's Perl backend rates 62% on ci.kaitai.io (under the 65%
+    # bar), and it drops every `params:` argument, which pcapng relies on.
+    # No Rust: ksc 0.11's Rust output for these specs doesn't compile (calculated
+    # endianness, params, switch-on over an instance, ...), and the backend is new.
+    # Layer 1 (compile.py --all) still checks that ksc accepts the specs for both.
 }
 
-DEFAULT_TARGETS = ["java", "python", "javascript", "csharp", "cpp", "lua"]
+DEFAULT_TARGETS = ["java", "python", "javascript", "csharp", "cpp", "lua", "php", "ruby"]
 
 IS_WINDOWS = os.name == "nt"
 
@@ -355,3 +369,71 @@ def lua_vendor() -> Path:
     for name, (url, sha256) in LUA_VENDOR.items():
         fetch_file(url, sha256, vendor / name)
     return vendor
+
+
+# --- PHP -----------------------------------------------------------------------
+
+# Extensions the tests need: the runtime needs iconv, composer needs openssl and
+# zip, PHPUnit needs dom, mbstring, xml and xmlwriter, and the tests use bcmath
+# for exact timestamps. Windows builds ship without a php.ini, so the ones that
+# exist as DLLs but aren't loaded are turned on with -d.
+PHP_EXTENSIONS = ["bcmath", "dom", "iconv", "json", "mbstring", "openssl", "tokenizer", "xml",
+                  "xmlwriter", "zip"]
+COMPOSER = ("https://getcomposer.org/download/2.11.2/composer.phar",
+            "dd158c0afd41d15fac89e1b4e47b5d42911fe316c3687cd5edac98319b25d028")
+
+_php_cmd_cache: list[str] | None = None
+
+
+def find_php() -> str:
+    winget = Path(os.environ.get("LOCALAPPDATA", "")) / "Microsoft" / "WinGet" / "Packages"
+    fallbacks = sorted(winget.glob("PHP.PHP.8.*/php.exe"), reverse=True) if IS_WINDOWS else []
+    php = find_tool("PHP", ["php"], fallbacks)
+    if not php:
+        raise MissingTool("php not found; install PHP 8.4+ (winget install PHP.PHP.8.5, "
+                          "or apt install php-cli php-xml php-mbstring php-bcmath php-zip) or set PHP")
+    return php
+
+
+def php_cmd() -> list[str]:
+    """php plus the -d flags that load the extensions the tests need."""
+    global _php_cmd_cache
+    if _php_cmd_cache is not None:
+        return _php_cmd_cache
+    php = find_php()
+    loaded = subprocess.run([php, "-r", "echo implode(',', get_loaded_extensions());"],
+                            capture_output=True, text=True).stdout.lower().split(",")
+    cmd = [php]
+    ext_dir = Path(php).parent / "ext"
+    missing = [e for e in PHP_EXTENSIONS if e not in loaded]
+    if missing and ext_dir.is_dir():
+        cmd += ["-d", f"extension_dir={ext_dir}"]
+        for e in missing:
+            if (ext_dir / f"php_{e}.dll").is_file() or (ext_dir / f"{e}.so").is_file():
+                cmd += ["-d", f"extension={e}"]
+    _php_cmd_cache = cmd
+    return cmd
+
+
+def find_ruby() -> str:
+    fallbacks = sorted(Path("C:/").glob("Ruby*-x64/bin/ruby.exe"), reverse=True) if IS_WINDOWS else []
+    ruby = find_tool("RUBY", ["ruby"], fallbacks)
+    if not ruby:
+        raise MissingTool("ruby not found; install Ruby 3.3+ (winget install RubyInstallerTeam.RubyWithDevKit.4.0, "
+                          "or apt install ruby ruby-bundler) or set RUBY")
+    return ruby
+
+
+def ruby_env() -> dict:
+    """Environment for bundler: Ruby's bin first on PATH, gems in tests/ruby/vendor/bundle."""
+    env = dict(os.environ)
+    env["PATH"] = str(Path(find_ruby()).parent) + os.pathsep + env.get("PATH", "")
+    env["BUNDLE_GEMFILE"] = str(TESTS / "ruby" / "Gemfile")
+    env["BUNDLE_PATH"] = str(TESTS / "ruby" / "vendor" / "bundle")
+    return env
+
+
+def composer_cmd() -> list[str]:
+    """php + a pinned composer.phar (downloaded into tests/php/.tools/)."""
+    phar = fetch_file(*COMPOSER, TESTS / "php" / ".tools" / "composer.phar")
+    return [*php_cmd(), str(phar)]

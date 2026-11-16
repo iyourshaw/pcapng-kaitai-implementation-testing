@@ -15,8 +15,8 @@ import argparse
 import sys
 from pathlib import Path
 
-from _common import (TESTS, MissingTool, find_dotnet, find_lua, gradle_cmd, java_env, lua_vendor, npm,
-                     parse_targets, posix_cmd, run, to_posix_path, venv_python)
+from _common import (TESTS, MissingTool, find_dotnet, find_lua, find_ruby, gradle_cmd, java_env, lua_vendor,
+                     npm, parse_targets, php_cmd, posix_cmd, ruby_env, run, to_posix_path, venv_python)
 
 
 def test_python() -> bool:
@@ -65,6 +65,21 @@ def test_lua() -> bool:
     return run([find_lua(), "test_samples.lua"], cwd=TESTS / "lua").returncode == 0
 
 
+def test_php() -> bool:
+    from build_check import ensure_php_deps
+    if ensure_php_deps():
+        return False
+    return run([*php_cmd(), "vendor/bin/phpunit"], cwd=TESTS / "php").returncode == 0
+
+
+def test_ruby() -> bool:
+    from build_check import ensure_ruby_deps
+    if ensure_ruby_deps():
+        return False
+    return run([find_ruby(), "-S", "bundle", "exec", "ruby", "test_samples.rb"], cwd=TESTS / "ruby",
+               env=ruby_env()).returncode == 0
+
+
 RUNNERS = {
     "python": test_python,
     "java": test_java,
@@ -72,6 +87,8 @@ RUNNERS = {
     "csharp": test_csharp,
     "cpp": test_cpp,
     "lua": test_lua,
+    "php": test_php,
+    "ruby": test_ruby,
 }
 
 

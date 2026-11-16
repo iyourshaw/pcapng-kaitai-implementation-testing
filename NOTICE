@@ -40,9 +40,12 @@ Tools and libraries that are used but not included
     Kaitai Struct compiler 0.11 (GPL-3.0-or-later), used as a build tool
     Kaitai Struct runtimes: kaitaistruct for Python (MIT), kaitai-struct for
       JavaScript (Apache-2.0), io.kaitai:kaitai-struct-runtime for Java (MIT),
-      KaitaiStruct.Runtime.CSharp, and the C++/STL and Lua runtimes
+      KaitaiStruct.Runtime.CSharp, kaitai-io/kaitai_struct_php_runtime,
+      the kaitai-struct gem for Ruby, and the C++/STL and Lua runtimes
     Test dependencies: pytest, JUnit, Jackson, JsonUnit, Hamcrest, Gradle,
-      NUnit, GoogleTest, nlohmann/json, luaunit and dkjson
+      NUnit, GoogleTest, nlohmann/json, luaunit, dkjson, Composer, PHPUnit
+      and minitest
   The Lua runtime, luaunit and dkjson are downloaded into tests/lua/vendor/,
-  and the C++ ones into the CMake build directory. Neither location is
-  committed.
+  the C++ ones into the CMake build directory, Composer and the PHP packages
+  into tests/php/.tools/ and tests/php/vendor/, and the Ruby gems into
+  tests/ruby/vendor/. None of these locations is committed.

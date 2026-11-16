@@ -18,3 +18,8 @@ tests/java/.kotlin/
 tests/csharp/bin/
 tests/csharp/obj/
 tests/lua/vendor/
+tests/php/vendor/
+tests/php/.tools/
+tests/php/.phpunit.cache/
+tests/ruby/vendor/
+tests/ruby/.bundle/

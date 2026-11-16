@@ -2,8 +2,9 @@
 #   1. compile:  ksc accepts the specs for every target (scripts/compile.py --all)
 #   2. build:    the generated code builds or loads, per language (scripts/build_check.py)
 #   3. decode:   each language decodes every sample to match tests/expected/ (scripts/run_tests.py)
-# Layers 2 and 3 run for Java, Python, JavaScript, C#, C++ and Lua, on Ubuntu and
-# Windows (C++ on Ubuntu only).
+# Layers 2 and 3 run for Java, Python, JavaScript, C#, C++, Lua, PHP and Ruby, on
+# Ubuntu and Windows (C++ on Ubuntu only). Perl and Rust get layer 1 only: ksc's
+# output for them doesn't work for these specs (see README.md).
 
 name: tests
 
@@ -30,6 +31,8 @@ env:
   DOTNET_NOLOGO: "1"
   LUA_VERSION: "5.4.6"
   LUA_WIN64_SHA256: 24b4e1b3ee77c71199d84a8597f15ad4e11e011b8aac3789b6e2bc805e9844a4
+  PHP_VERSION: "8.5"
+  RUBY_VERSION: "4.0"
 
 jobs:
   compile:
@@ -85,7 +88,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        target: [java, python, javascript, csharp, cpp, lua]
+        target: [java, python, javascript, csharp, cpp, lua, php, ruby]
         exclude:
           # The C++ tests build with GCC and Clang on Linux (in WSL when run
           # locally on Windows); GitHub's Windows runners have no WSL distro.
@@ -167,6 +170,25 @@ jobs:
             sudo apt-get install -y -q lua5.4
             lua5.4 -v
           fi
+
+      - name: Set up PHP
+        if: matrix.target == 'php'
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          # The runtime needs iconv, PHPUnit dom/mbstring/xml/xmlwriter, and the
+          # tests bcmath. composer.phar is fetched (pinned) by the scripts.
+          extensions: bcmath, dom, iconv, json, mbstring, openssl, tokenizer, xml, xmlwriter, zip
+          tools: none
+          coverage: none
+
+      - name: Set up Ruby
+        if: matrix.target == 'ruby'
+        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
+        with:
+          ruby-version: ${{ env.RUBY_VERSION }}
+          # The scripts run `bundle install` into tests/ruby/vendor/bundle themselves.
+          bundler-cache: false
 
       - name: Build check
         run: python scripts/build_check.py --target ${{ matrix.target }}

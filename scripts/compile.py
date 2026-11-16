@@ -102,8 +102,32 @@ def compile_all() -> bool:
         if missing:
             print(f"[all] no output for: {', '.join(missing)}", file=sys.stderr)
             ok = False
+        ok &= cross_check_with_check_errors(log, outdir)
     print(f"[all] {'OK' if ok else 'FAILED'} -> {outdir}")
     return ok
+
+
+def cross_check_with_check_errors(log: dict, outdir) -> bool:
+    """Run upstream's own _build/check-errors (Ruby) on the same log, if Ruby is
+    installed, and check it agrees with the Python port about top-level errors.
+    (check-errors doesn't read the per-language errors, so it can't see those.)"""
+    import json
+    from _common import FORMATS, MissingTool, find_ruby, run
+    log_file = outdir / "log.json"
+    log_file.write_text(json.dumps(log, indent=1), encoding="utf-8")
+    try:
+        ruby = find_ruby()
+    except MissingTool:
+        print("[all] check-errors: skipped (no Ruby)")
+        return True
+    proc = run([ruby, FORMATS / "_build" / "check-errors", log_file], capture=True)
+    top_level = [msg for lang, _, msg in collect_errors(log) if lang is None]
+    agrees = (proc.returncode != 0) == bool(top_level)
+    status = "agrees" if agrees else "DISAGREES"
+    print(f"[all] check-errors: exit {proc.returncode}, {len(top_level)} top-level error(s) in the port; {status}")
+    if not agrees:
+        print(proc.stderr, file=sys.stderr)
+    return agrees
 
 
 def main() -> int:

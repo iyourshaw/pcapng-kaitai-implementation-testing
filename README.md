@@ -5,7 +5,8 @@
 Tests for an implementation of a cross-platform pcapng decoder using Kaitai Struct.
 
 Includes scripts to compile the pcapng implementation to every language supported by Kaitai Struct,
-synthetic sample pcapng files, and decode test projects for Java, Python, JavaScript, C#, C++ and Lua.
+synthetic sample pcapng files, and decode test projects for Java, Python, JavaScript, C#, C++, Lua,
+PHP and Ruby.
 
 Tests for `network/pcapng.ksy` and `network/link_frame.ksy` (with `linux_sll`, `ieee802_11`
 and `radiotap`). The specs themselves
@@ -32,6 +33,13 @@ are in the `kaitai_struct_formats` submodule, which tracks the `pcapng` branch o
 - **Lua 5.4** (`winget install DEVCOM.Lua`, `apt install lua5.4`, or set `LUA`). The Kaitai Lua
   runtime, luaunit and dkjson are single files that the scripts download (pinned by sha256) to
   `tests/lua/vendor/`.
+- **PHP 8.4+** (`winget install PHP.PHP.8.5`, or set `PHP`) with bcmath, dom, iconv, mbstring,
+  openssl, xml, xmlwriter and zip. The Windows build has no `php.ini`, so the scripts turn on
+  whichever of these aren't loaded with `-d extension=...`. Composer 2.11.2 is downloaded (pinned by
+  sha256) to `tests/php/.tools/`, and `composer install` runs if `tests/php/vendor/` is missing.
+- **Ruby 3.3+** with Bundler (`winget install RubyInstallerTeam.RubyWithDevKit.4.0`, or set
+  `RUBY`). The scripts run `bundle install` into `tests/ruby/vendor/bundle/`. When Ruby is
+  installed, `compile.py --all` also runs upstream's own `_build/check-errors` as a cross-check.
 - **tshark** (Wireshark) is needed only to regenerate the golden files.
 
 The generated decoders go to `tests/<lang>/generated/` and aren't committed.
@@ -44,8 +52,8 @@ The generated decoders go to `tests/<lang>/generated/` and aren't committed.
 | 2. Build | `python scripts/build_check.py` | The generated code compiles or loads in each language (C++: as C++11 and as real C++98, with GCC and Clang) |
 | 3. Decode | `python scripts/run_tests.py` | Each language decodes every sample and matches `tests/expected/` |
 
-Each script takes `--target java,python,javascript,csharp,cpp,lua` (all of them by default) to pick
-languages. `build_check.py` and `run_tests.py` run the compile step first unless you pass
+Each script takes `--target java,python,javascript,csharp,cpp,lua,php,ruby` (all of them by default)
+to pick languages. `build_check.py` and `run_tests.py` run the compile step first unless you pass
 `--no-compile`. A language whose toolchain isn't installed is reported as MISSING, which fails the run.
 
 `ksc` exits with 0 even when it reports errors, so `compile.py` reads its `--ksc-json-output`
@@ -58,6 +66,22 @@ as XFAIL. At the moment that's one, in Lua: upstream `ipv4_packet` and `protocol
 other, and Lua's `require` recurses forever on the cycle. The Lua decode tests load the generated
 modules with a cycle-tolerant searcher, so decoding is still tested.
 
+### Languages without test projects
+
+A ksc target gets a test project only if it rates at least 65% on
+[ci.kaitai.io](https://ci.kaitai.io/), Kaitai's own test suite, and works for these specs.
+Layer 1 still checks that ksc accepts the specs for all of these:
+- **Go** and **Nim**: kaitai.io lists them as "entry-level support".
+- **Perl** (62% on ci.kaitai.io): ksc 0.11's Perl backend drops every `params:` argument, so
+  pcapng's options, name records and `link_frame` don't decode.
+- **Rust** (71%): ksc 0.11's Rust output for these specs doesn't compile. Under calculated
+  endianness it reads `enum:` fields with methods that don't exist, and it never passes the
+  byte order to types that take params. It also mistypes a `switch-on` over an instance, and
+  some integer expressions.
+- **construct**: it can't do pcapng's calculated endianness (see `KNOWN_FAILURES`).
+
+### Spec patches in the submodule
+
 The submodule carries **patched local copies** of `network/pcap.ksy` and
 `network/ethernet_frame.ksy` (fork commit bff8c65). They're the versions originally used with
 the samples, and the tests run against them as they are:
@@ -68,8 +92,7 @@ the samples, and the tests run against them as they are:
 
 `pcap.ksy` still has to be reconciled with upstream `master` (5f37c81 and later).
 
-The C# and Lua build checks found four naming problems. They're fixed in the submodule's working
-tree, and not committed yet:
+The C# and Lua build checks found four naming problems, fixed in the fork (d500398):
 - `ieee802_11`: the type `llc` is now `llc_header`. A field and a type with the same name give C#
   a property and a nested class with the same name (CS0102).
 - `ieee802_11`: `ether_type` uses `snap_ether_type.as<u2>`. ksc's C# output doesn't compile a
@@ -85,10 +108,11 @@ tree, and not committed yet:
 the Actions tab:
 - `compile`: layer 1 for every ksc target, on Ubuntu.
 - `test`: layers 2 and 3 for each language, on Ubuntu and on Windows. C++ runs on Ubuntu only,
-  because GitHub's Windows runners have no WSL (11 jobs).
+  because GitHub's Windows runners have no WSL (15 jobs).
 
 The jobs install ksc from the 0.11 release zip, with a pinned sha256, and use Temurin 25, Python 3.13,
-Node 24, .NET 10, and Lua 5.4 (apt on Ubuntu; the pinned DEVCOM zip on Windows). A failing Java
+Node 24, .NET 10, Lua 5.4 (apt on Ubuntu; the pinned DEVCOM zip on Windows), PHP 8.5
+(`setup-php`) and Ruby 4.0 (`setup-ruby`). A failing Java
 job uploads its test reports as an artifact. `gen_expected.py --check` isn't run in CI: it needs
 tshark 4.6.9, and the golden files it checks are committed.
 

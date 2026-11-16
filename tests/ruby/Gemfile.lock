@@ -1,0 +1,31 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    drb (2.2.3)
+    kaitai-struct (0.11)
+    minitest (6.1.0)
+      drb (~> 2.0)
+      prism (>= 1.5, < 3)
+    prism (2.1.0)
+    prism (2.1.0-x64-mingw-ucrt)
+    prism (2.1.0-x86_64-linux-gnu)
+
+PLATFORMS
+  ruby
+  x64-mingw-ucrt
+  x86_64-linux
+
+DEPENDENCIES
+  kaitai-struct (= 0.11)
+  minitest (~> 6.0)
+
+CHECKSUMS
+  drb (2.2.3) sha256=0b00d6fdb50995fe4a45dea13663493c841112e4068656854646f418fda13373
+  kaitai-struct (0.11) sha256=edadb501c03ad69e6fe5e8e9eb354cc4e80735a94c9bf8f9636b8ddbba9d50c7
+  minitest (6.1.0) sha256=ff373595aa8888631e8a5463986a76b3845346ae6d7fa46e139c1633d418076e
+  prism (2.1.0) sha256=1c0a7c6dea0e93183390fb123f007564dbe663198e2f86ad87204151147601f3
+  prism (2.1.0-x64-mingw-ucrt) sha256=9cd54b1d4f645cb89fc28d17b7a35e7bdc018e1c93a1d499b09d37f14498235f
+  prism (2.1.0-x86_64-linux-gnu) sha256=b2b647afce09551e650b8bb3e2fc91d7d73d392a09534ca307ec0d619c33bfd4
+
+BUNDLED WITH
+  4.0.20
